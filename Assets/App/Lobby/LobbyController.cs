@@ -34,7 +34,7 @@ namespace Lbs.MiniGames.Lobby
         }
 
         private static readonly Color Purple = new(0.580f, 0.282f, 0.957f);
-        private static readonly Color HeaderOverlay = new(0f, 0f, 0f, 0.38f);
+        private static readonly Color HeaderOverlay = new(0f, 0f, 0f, 0.30f);
         private static readonly Color Orange = new(1f, 0.718f, 0.251f);
         private static readonly Color DarkInk = new(0.141f, 0.102f, 0.208f);
         private static readonly Color ProfileCapsulePurple = new(0f, 0f, 0f, 0.40f);
@@ -62,7 +62,7 @@ namespace Lbs.MiniGames.Lobby
         // Reference-canvas value: 422 px renders at ~300 px wide at 1366x768,
         // a 12% reduction from the previous 480 px / ~342 px pill.
         private const float DifficultyPillWidth = 422f;
-        private const float DifficultyPillHeight = 60f;
+        private const float DifficultyPillHeight = 84f;
         private const float DifficultySheetHeight = 620f;
         private const float DifficultySheetVisibleY = -64f;
         private const float DifficultySheetHiddenY = -684f;
