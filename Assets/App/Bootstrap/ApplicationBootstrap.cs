@@ -84,7 +84,7 @@ namespace Lbs.MiniGames.Bootstrap
             sceneConfiguration.Configure(scene, services);
             if (scene.name == lobbySceneName)
             {
-                audioService.StopMusic();
+                audioService.PlayMusic(audioConfig?.HubMusic, true, audioConfig?.MusicVolume ?? 0.25f);
             }
             else if (LevelSequenceRoute.IsLogicSequenceGame(services.Session.CurrentRequest?.Game?.GameId)
                      && audioConfig != null

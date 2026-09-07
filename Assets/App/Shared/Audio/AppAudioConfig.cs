@@ -9,12 +9,14 @@ namespace Lbs.MiniGames.Shared.Audio
     public sealed class AppAudioConfig : ScriptableObject
     {
         [SerializeField] private AudioClip globalMusic;
+        [SerializeField] private AudioClip hubMusic;
         [SerializeField, Range(0f, 1f)] private float musicVolume = 0.25f;
         [SerializeField, Range(0f, 1f)] private float duckedMusicVolume = 0.125f;
         [SerializeField, Range(0f, 1f)] private float voiceVolume = 1f;
         [SerializeField, Range(0f, 1f)] private float sfxVolume = 1f;
 
         public AudioClip GlobalMusic => globalMusic;
+        public AudioClip HubMusic => hubMusic != null ? hubMusic : globalMusic;
         public float MusicVolume => musicVolume;
         public float DuckedMusicVolume => duckedMusicVolume;
         public float VoiceVolume => voiceVolume;
