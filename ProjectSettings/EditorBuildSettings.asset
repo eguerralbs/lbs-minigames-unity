@@ -75,6 +75,9 @@ EditorBuildSettings:
     path: Assets/App/Games/ShortestRoute/ShortestRoute.unity
     guid: ce88a7eeb5d337e478855577bf9feb3c
   - enabled: 1
+    path: Assets/App/Games/AppleMath/AppleMath.unity
+    guid: f0a3e5c7d9b04d1e8a2c5e7f9b1d3f40
+  - enabled: 1
     path: Assets/App/Games/Thinking3D/Thinking3D.unity
     guid: 506bcbeab4eda5a4fa7d31347948f1d8
   - enabled: 1

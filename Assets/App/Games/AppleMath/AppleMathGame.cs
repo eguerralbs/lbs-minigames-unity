@@ -11,13 +11,17 @@ using Lbs.MiniGames.Shared.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Lbs.MiniGames.Games.ShortestRoute
+namespace Lbs.MiniGames.Games.AppleMath
 {
-    public sealed class ShortestRouteGame : MonoBehaviour, IAppScene, ILevelTransitionParticipant
+    public sealed class AppleMathGame : MonoBehaviour, IAppScene, ILevelTransitionParticipant
     {
+        private static readonly Color Background = new(.9686f, .9608f, .9804f);
+        private static readonly Color Ink = new(.14f, .10f, .21f);
+        private static readonly Color NormalBorder = new(.78f, .78f, .78f, 1f);
         private static readonly Color Error = new(.70f, .15f, .12f);
+        private static readonly Color Success = new(.09f, .48f, .29f);
 
-        [SerializeField] private Sprite backgroundArtwork, chartArtwork, character1Artwork, character2Artwork;
+        [SerializeField] private Sprite equationArtwork;
         [SerializeField] private Sprite exitIcon, hongNeutral, hong1, hong2, hong3, finalStar;
         [SerializeField] private Sprite celebration4Star, celebration5Star, circleConfetti, rectangularConfetti, serpentina, serpentina2, serpentina3;
         [SerializeField] private AudioClip instruction, successSfx, failSfx;
@@ -69,82 +73,89 @@ namespace Lbs.MiniGames.Games.ShortestRoute
             Canvas canvas = GetComponentInParent<Canvas>();
             if (!canvas || board != null) return;
 
-            board = new GameObject("ShortestRouteBoard", typeof(RectTransform)).GetComponent<RectTransform>();
+            board = new GameObject("AppleMathBoard", typeof(RectTransform)).GetComponent<RectTransform>();
             board.SetParent(canvas.transform, false);
             UiFactory.Stretch(board, 0);
+            UiFactory.Stretch(UiFactory.CreateImage(board, "Background", Background).rectTransform, 0);
 
-            Image background = UiFactory.CreateImage(board, "Background", Color.white);
-            background.sprite = backgroundArtwork;
-            background.preserveAspect = false;
-            background.raycastTarget = false;
-            UiFactory.Stretch(background.rectTransform, 0);
-
-            Image chart = UiFactory.CreateImage(board, "Chart", Color.white);
-            chart.sprite = chartArtwork;
-            chart.preserveAspect = true;
-            chart.raycastTarget = false;
-            Pixel(chart.rectTransform, new Vector2(960, 540), new Vector2(1920, 1080));
+            Image equation = UiFactory.CreateImage(board, "Equation", Color.white);
+            equation.sprite = equationArtwork;
+            equation.preserveAspect = true;
+            equation.raycastTarget = false;
+            Pixel(equation.rectTransform, new Vector2(960f, 430f), new Vector2(1600f, 750f));
 
             levelChrome = LevelChromeFactory.Build(board, font, exitIcon, hongNeutral, ReturnToLobby, ToggleInstruction);
             hongImage = levelChrome.HongImage;
-            CreateCharacter(ShortestRouteRule.Character1, character1Artwork, new Vector2(1550, 255));
-            CreateCharacter(ShortestRouteRule.Character2, character2Artwork, new Vector2(1565, 600));
+            CreateOption(AppleMathRule.Option3, new Vector2(475f, 920f));
+            CreateOption(AppleMathRule.Option2, new Vector2(960f, 920f));
+            CreateOption(AppleMathRule.Option1, new Vector2(1445f, 920f));
             EnsureScoreFont();
         }
 
-        private void CreateCharacter(string id, Sprite artwork, Vector2 center)
+        private void CreateOption(string answerId, Vector2 center)
         {
-            Image hitArea = UiFactory.CreateImage(board, id, Color.clear);
-            hitArea.raycastTarget = true;
-            Pixel(hitArea.rectTransform, center, new Vector2(330, 330));
+            RoundedSurface surface = UiFactory.CreateRoundedSurface(board, $"Option{answerId}", NormalBorder, 22f);
+            Pixel(surface.rectTransform, center, new Vector2(320f, 145f));
+            surface.OutlineThickness = 4f;
+            RoundedSurface fill = UiFactory.CreateRoundedSurface(surface.rectTransform, "Fill", Color.white, 18f, false);
+            UiFactory.Stretch(fill.rectTransform, surface.OutlineThickness);
 
-            Image image = UiFactory.CreateImage(hitArea.rectTransform, "Artwork", Color.white);
-            image.sprite = artwork;
-            image.preserveAspect = true;
-            image.raycastTarget = false;
-            image.rectTransform.anchorMin = image.rectTransform.anchorMax = new Vector2(.5f, .5f);
-            image.rectTransform.pivot = new Vector2(.5f, .5f);
-            image.rectTransform.anchoredPosition = Vector2.zero;
-            image.rectTransform.sizeDelta = new Vector2(270, 270);
+            Text label = UiFactory.CreateText(surface.rectTransform, "Label", font, 62, TextAnchor.MiddleCenter, Ink);
+            label.text = answerId;
+            label.fontStyle = FontStyle.Normal;
+            label.raycastTarget = false;
+            UiFactory.Stretch(label.rectTransform, 0);
 
-            Button button = hitArea.gameObject.AddComponent<Button>();
-            button.onClick.AddListener(() => Select(id, image));
+            Button button = surface.gameObject.AddComponent<Button>();
+            button.targetGraphic = surface;
+            button.onClick.AddListener(() => Select(answerId, surface));
             answers.Add(button);
         }
 
-        private void Select(string id, Image character)
+        private void Select(string answerId, RoundedSurface surface)
         {
             if (state.Phase != SelectionPhase.Ready) return;
             StopInstruction();
             SetInteractable(false);
-            bool correct = state.Select(id, ShortestRouteRule.CorrectAnswer);
-            selectionSequence = StartCoroutine(correct ? ResolveCorrect(character) : ResolveIncorrect(character));
+            bool correct = state.Select(answerId, AppleMathRule.CorrectAnswer);
+            selectionSequence = StartCoroutine(correct ? ResolveCorrect(surface) : ResolveIncorrect(surface));
         }
 
-        private IEnumerator ResolveIncorrect(Image character)
+        private IEnumerator ResolveIncorrect(RoundedSurface surface)
         {
-            character.color = Error;
+            RoundedSurface fill = surface.transform.Find("Fill")?.GetComponent<RoundedSurface>();
+            Text label = surface.transform.Find("Label")?.GetComponent<Text>();
+            surface.color = Error;
+            if (fill) fill.color = Error;
+            if (label) label.color = Color.white;
             if (failSfx) audio?.PlaySfx(failSfx);
             PlayRandom(encouragements);
             yield return CardAnimator.ShakeBoard(board);
-            character.color = Color.white;
+            surface.color = NormalBorder;
+            if (fill) fill.color = Color.white;
+            if (label) label.color = Ink;
             state.FinishIncorrect();
             SetInteractable(true);
             selectionSequence = null;
         }
 
-        private IEnumerator ResolveCorrect(Image character)
+        private IEnumerator ResolveCorrect(RoundedSurface surface)
         {
-            yield return CardAnimator.PunchPlace(character.rectTransform);
+            yield return CardAnimator.PunchPlace(surface.rectTransform);
+            RoundedSurface fill = surface.transform.Find("Fill")?.GetComponent<RoundedSurface>();
+            Text label = surface.transform.Find("Label")?.GetComponent<Text>();
+            surface.color = Success;
+            if (fill) fill.color = Success;
+            if (label) label.color = Color.white;
             if (successSfx) audio?.PlaySfx(successSfx);
             PlayRandom(compliments);
             celebrationPresenter.ShowCelebration(board, CelebrationInput());
             yield return new WaitForSecondsRealtime(celebrationPresenter.PresentationDelay);
             celebrationPresenter.ShowFinal(CelebrationInput());
-            services?.GameLauncher.Complete(new MiniGameResult(LevelSequenceRoute.ShortestRouteGameId, MiniGameCompletionState.Completed, state.Score, 1, 1, services.Session.SelectedDifficultyId));
+            services?.GameLauncher.Complete(new MiniGameResult(LevelSequenceRoute.AppleMathGameId, MiniGameCompletionState.Completed, state.Score, 1, 1, services.Session.SelectedDifficultyId));
             state.FinishCelebration();
             yield return new WaitForSecondsRealtime(2f);
-            services?.LevelSequence?.Advance(LevelSequenceRoute.ShortestRouteSuccessTarget);
+            state.EnableFinalInput();
             selectionSequence = null;
         }
 
