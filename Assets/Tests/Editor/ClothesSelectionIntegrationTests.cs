@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Lbs.MiniGames.Bootstrap;
 using Lbs.MiniGames.Catalog;
 using Lbs.MiniGames.Navigation;
@@ -11,9 +12,108 @@ namespace Lbs.MiniGames.Tests
     public sealed class ClothesSelectionIntegrationTests
     {
         [Test]
-        public void ShapeSuccessRoute_TargetsClothesSelection()
+        public void FunnyFaceStartsVisualSequence_AtShapeAnalogy()
         {
-            Assert.AreEqual("clothes.selection", LevelSequenceRoute.ShapeAnalogySuccessTarget);
+            Assert.AreEqual("shape.analogy", LevelSequenceRoute.FunnyFaceDragSuccessTarget);
+        }
+
+        [Test]
+        public void VisualSequence_UsesEveryGameOnceAndEndsAtFractionSuccession()
+        {
+            string[] actual =
+            {
+                LevelSequenceRoute.FunnyFaceDragGameId,
+                LevelSequenceRoute.FunnyFaceDragSuccessTarget,
+                LevelSequenceRoute.ShapeAnalogySuccessTarget,
+                LevelSequenceRoute.WolfieFlasksSuccessTarget,
+                LevelSequenceRoute.Thinking3DSuccessTarget,
+                LevelSequenceRoute.AnimalDragSuccessTarget,
+                LevelSequenceRoute.KitchenMathLogicSuccessTarget,
+                LevelSequenceRoute.TrianglesShapeLogicSuccessTarget,
+                LevelSequenceRoute.CircleMathSuccessTarget,
+                LevelSequenceRoute.CubePlatformSuccessTarget,
+                LevelSequenceRoute.ChemistrySelectionSuccessTarget,
+                LevelSequenceRoute.CandiesLogicSuccessTarget,
+                LevelSequenceRoute.ClothesSelectionSuccessTarget,
+                LevelSequenceRoute.MakeAnEmojiDragSuccessTarget,
+                LevelSequenceRoute.LadyBugPlaceSuccessTarget,
+                LevelSequenceRoute.StickersPlacementSuccessTarget,
+                LevelSequenceRoute.ObjectSelectionSuccessTarget,
+                LevelSequenceRoute.BubbleMathSuccessTarget,
+                LevelSequenceRoute.TrianglesCountSuccessTarget,
+                LevelSequenceRoute.ThinkingFiguresSuccessTarget,
+                LevelSequenceRoute.SquaresSuccessionSuccessTarget
+            };
+
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    "funnyface.drag",
+                    "shape.analogy",
+                    "wolfie.flasks",
+                    "thinking.3d",
+                    "animal.drag",
+                    "kitchen.math.logic",
+                    "triangles.shape.logic",
+                    "circle.math",
+                    "cube.platform",
+                    "chemistry.selection",
+                    "candies.logic",
+                    "clothes.selection",
+                    "make.emoji.drag",
+                    "ladybug.place",
+                    "stickers.placement",
+                    "object.selection",
+                    "bubble.math",
+                    "triangles.count",
+                    "thinking.figures",
+                    "squares.succession",
+                    "fraction.succession"
+                },
+                actual);
+        }
+
+        [Test]
+        public void Catalog_OrdersVisibleLogicCardsLikeVisualSequence()
+        {
+            GameCatalog catalog = AssetDatabase.LoadAssetAtPath<GameCatalog>("Assets/App/Catalog/Data/MiniGameCatalog.asset");
+            Assert.NotNull(catalog);
+
+            List<string> actual = new();
+            foreach (GameDefinition game in catalog.Games)
+            {
+                if (game != null && game.VisibleInHub && game.Category != null && game.Category.CategoryId == "logica")
+                {
+                    actual.Add(game.GameId);
+                }
+            }
+
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    "funnyface.drag",
+                    "shape.analogy",
+                    "wolfie.flasks",
+                    "thinking.3d",
+                    "animal.drag",
+                    "kitchen.math.logic",
+                    "triangles.shape.logic",
+                    "circle.math",
+                    "cube.platform",
+                    "chemistry.selection",
+                    "candies.logic",
+                    "clothes.selection",
+                    "make.emoji.drag",
+                    "ladybug.place",
+                    "stickers.placement",
+                    "object.selection",
+                    "bubble.math",
+                    "triangles.count",
+                    "thinking.figures",
+                    "squares.succession",
+                    "fraction.succession"
+                },
+                actual);
         }
 
         [Test]

@@ -161,6 +161,7 @@ namespace Lbs.MiniGames.Games.WolfieFlasks
             CreateFinal();
             state.FinishCelebration();
             yield return new WaitForSecondsRealtime(2f);
+            services?.LevelSequence?.Advance(LevelSequenceRoute.WolfieFlasksSuccessTarget);
             state.EnableFinalInput();
             selectionSequence = null;
         }

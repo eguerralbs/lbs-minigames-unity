@@ -195,9 +195,8 @@ namespace Lbs.MiniGames.Games.FractionSuccession
             yield return new WaitForSecondsRealtime(celebrationPresenter.PresentationDelay);
             CreateFinal();
             state.FinishCelebration();
-            // Non-terminal: 2s celebration pause then auto-advance to thinking.figures
             yield return new WaitForSecondsRealtime(2f);
-            services?.LevelSequence?.Advance(LevelSequenceRoute.FractionSuccessionSuccessTarget);
+            state.EnableFinalInput();
             selectionSequence = null;
         }
 
