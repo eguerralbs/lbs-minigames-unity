@@ -44,6 +44,8 @@ namespace Lbs.MiniGames.Navigation
         public const string StickersPlacementGameId = "stickers.placement";
         public const string StickersPlacementSuccessTarget = "wolfie.flasks";
         public const string WolfieFlasksGameId = "wolfie.flasks";
+        public const string ShortestRouteGameId = "shortest.route";
+        public const string WolfieFlasksSuccessTarget = "shortest.route";
 
         /// <summary>
         /// Explicit membership boundary for games that share the logic-sequence BGM.
@@ -71,7 +73,8 @@ namespace Lbs.MiniGames.Navigation
                 || gameId == FractionSuccessionGameId
                 || gameId == ThinkingFiguresGameId
                 || gameId == StickersPlacementGameId
-                || gameId == WolfieFlasksGameId;
+                || gameId == WolfieFlasksGameId
+                || gameId == ShortestRouteGameId;
         }
     }
 }
