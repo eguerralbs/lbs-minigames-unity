@@ -51,6 +51,18 @@ namespace Lbs.MiniGames.Shared.UI
             exitImage.preserveAspect = true;
             AddArtworkShadow(exitImage, LevelChromeLayout.ArtworkShadowOffset, LevelChromeLayout.ArtworkShadowAlpha);
             UiFactory.Stretch(exitImage.rectTransform, 0f);
+            // Tint the artwork itself so the press is visible; the clear
+            // background graphic would swallow the default color transition.
+            exit.targetGraphic = exitImage;
+            exit.transition = Selectable.Transition.ColorTint;
+            ColorBlock exitColors = exit.colors;
+            exitColors.normalColor = Color.white;
+            exitColors.highlightedColor = Color.white;
+            exitColors.pressedColor = new Color(0.75f, 0.75f, 0.75f, 1f);
+            exitColors.selectedColor = Color.white;
+            exitColors.disabledColor = Color.white;
+            exitColors.fadeDuration = 0.1f;
+            exit.colors = exitColors;
 
             // Hong / Speaker
             RoundedSurface hongSurface = UiFactory.CreateRoundedSurface(parent, "Hong", Color.clear, hongRadius);
