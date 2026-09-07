@@ -46,8 +46,10 @@ namespace Lbs.MiniGames.Navigation
         public const string WolfieFlasksGameId = "wolfie.flasks";
         public const string ShortestRouteGameId = "shortest.route";
         public const string AppleMathGameId = "apple.math";
+        public const string ShapePutGameId = "shape.put";
         public const string WolfieFlasksSuccessTarget = "shortest.route";
         public const string ShortestRouteSuccessTarget = "apple.math";
+        public const string AppleMathSuccessTarget = "shape.put";
 
         /// <summary>
         /// Explicit membership boundary for games that share the logic-sequence BGM.
@@ -77,7 +79,8 @@ namespace Lbs.MiniGames.Navigation
                 || gameId == StickersPlacementGameId
                 || gameId == WolfieFlasksGameId
                 || gameId == ShortestRouteGameId
-                || gameId == AppleMathGameId;
+                || gameId == AppleMathGameId
+                || gameId == ShapePutGameId;
         }
     }
 }
