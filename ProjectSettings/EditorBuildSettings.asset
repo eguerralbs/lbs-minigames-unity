@@ -81,6 +81,9 @@ EditorBuildSettings:
     path: Assets/App/Games/ShapePut/ShapePut.unity
     guid: 082cadc0cb8d40239d1bbadb6b83d644
   - enabled: 1
+    path: Assets/App/Games/AgeCompare/AgeCompare.unity
+    guid: 5b2da6cc49ac4403b0c755c421b15616
+  - enabled: 1
     path: Assets/App/Games/Thinking3D/Thinking3D.unity
     guid: 506bcbeab4eda5a4fa7d31347948f1d8
   - enabled: 1

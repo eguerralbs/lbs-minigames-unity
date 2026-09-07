@@ -11,17 +11,17 @@ using Lbs.MiniGames.Shared.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Lbs.MiniGames.Games.ShapePut
+namespace Lbs.MiniGames.Games.AgeCompare
 {
-    public sealed class ShapePutGame : MonoBehaviour, IAppScene, ILevelTransitionParticipant
+    public sealed class AgeCompareGame : MonoBehaviour, IAppScene, ILevelTransitionParticipant
     {
         private static readonly Color Background = new(.9686f, .9608f, .9804f);
+        private static readonly Color Ink = new(.14f, .10f, .21f);
         private static readonly Color NormalBorder = new(.78f, .78f, .78f, 1f);
         private static readonly Color Error = new(.70f, .15f, .12f);
         private static readonly Color Success = new(.09f, .48f, .29f);
 
         [SerializeField] private Sprite principalArtwork;
-        [SerializeField] private Sprite option1Artwork, option2Artwork, option3Artwork, option4Artwork;
         [SerializeField] private Sprite exitIcon, hongNeutral, hong1, hong2, hong3, finalStar;
         [SerializeField] private Sprite celebration4Star, celebration5Star, circleConfetti, rectangularConfetti, serpentina, serpentina2, serpentina3;
         [SerializeField] private AudioClip instruction, successSfx, failSfx;
@@ -73,7 +73,7 @@ namespace Lbs.MiniGames.Games.ShapePut
             Canvas canvas = GetComponentInParent<Canvas>();
             if (!canvas || board != null) return;
 
-            board = new GameObject("ShapePutBoard", typeof(RectTransform)).GetComponent<RectTransform>();
+            board = new GameObject("AgeCompareBoard", typeof(RectTransform)).GetComponent<RectTransform>();
             board.SetParent(canvas.transform, false);
             UiFactory.Stretch(board, 0);
             UiFactory.Stretch(UiFactory.CreateImage(board, "Background", Background).rectTransform, 0);
@@ -82,30 +82,30 @@ namespace Lbs.MiniGames.Games.ShapePut
             principal.sprite = principalArtwork;
             principal.preserveAspect = true;
             principal.raycastTarget = false;
-            Pixel(principal.rectTransform, new Vector2(1030f, 410f), new Vector2(1120f, 710f));
+            Pixel(principal.rectTransform, new Vector2(960f, 400f), new Vector2(620f, 820f));
 
             levelChrome = LevelChromeFactory.Build(board, font, exitIcon, hongNeutral, ReturnToLobby, ToggleInstruction);
             hongImage = levelChrome.HongImage;
-            CreateOption(ShapePutRule.Option1, option1Artwork, new Vector2(470f, 900f));
-            CreateOption(ShapePutRule.Option2, option2Artwork, new Vector2(865f, 900f));
-            CreateOption(ShapePutRule.Option3, option3Artwork, new Vector2(1260f, 900f));
-            CreateOption(ShapePutRule.Option4, option4Artwork, new Vector2(1655f, 900f));
+            CreateOption(AgeCompareRule.Option7, new Vector2(470f, 900f));
+            CreateOption(AgeCompareRule.Option6, new Vector2(865f, 900f));
+            CreateOption(AgeCompareRule.Option5, new Vector2(1260f, 900f));
+            CreateOption(AgeCompareRule.Option1, new Vector2(1655f, 900f));
             EnsureScoreFont();
         }
 
-        private void CreateOption(string answerId, Sprite artwork, Vector2 center)
+        private void CreateOption(string answerId, Vector2 center)
         {
-            RoundedSurface surface = UiFactory.CreateRoundedSurface(board, answerId + "Card", NormalBorder, 26f);
-            Pixel(surface.rectTransform, center, new Vector2(350f, 185f));
-            surface.OutlineThickness = 5f;
-            RoundedSurface fill = UiFactory.CreateRoundedSurface(surface.rectTransform, "CardFill", Color.white, 21f, false);
+            RoundedSurface surface = UiFactory.CreateRoundedSurface(board, $"Option{answerId}", NormalBorder, 22f);
+            Pixel(surface.rectTransform, center, new Vector2(320f, 145f));
+            surface.OutlineThickness = 4f;
+            RoundedSurface fill = UiFactory.CreateRoundedSurface(surface.rectTransform, "Fill", Color.white, 18f, false);
             UiFactory.Stretch(fill.rectTransform, surface.OutlineThickness);
 
-            Image image = UiFactory.CreateImage(surface.rectTransform, "Artwork", Color.white);
-            image.sprite = artwork;
-            image.preserveAspect = true;
-            image.raycastTarget = false;
-            UiFactory.Stretch(image.rectTransform, 22f);
+            Text label = UiFactory.CreateText(surface.rectTransform, "Label", font, 62, TextAnchor.MiddleCenter, Ink);
+            label.text = answerId;
+            label.fontStyle = FontStyle.Normal;
+            label.raycastTarget = false;
+            UiFactory.Stretch(label.rectTransform, 0);
 
             Button button = surface.gameObject.AddComponent<Button>();
             button.targetGraphic = surface;
@@ -118,17 +118,23 @@ namespace Lbs.MiniGames.Games.ShapePut
             if (state.Phase != SelectionPhase.Ready) return;
             StopInstruction();
             SetInteractable(false);
-            bool correct = state.Select(answerId, ShapePutRule.CorrectAnswer);
+            bool correct = state.Select(answerId, AgeCompareRule.CorrectAnswer);
             selectionSequence = StartCoroutine(correct ? ResolveCorrect(surface) : ResolveIncorrect(surface));
         }
 
         private IEnumerator ResolveIncorrect(RoundedSurface surface)
         {
+            RoundedSurface fill = surface.transform.Find("Fill")?.GetComponent<RoundedSurface>();
+            Text label = surface.transform.Find("Label")?.GetComponent<Text>();
             surface.color = Error;
+            if (fill) fill.color = Error;
+            if (label) label.color = Color.white;
             if (failSfx) audio?.PlaySfx(failSfx);
             PlayRandom(encouragements);
             yield return CardAnimator.ShakeBoard(board);
             surface.color = NormalBorder;
+            if (fill) fill.color = Color.white;
+            if (label) label.color = Ink;
             state.FinishIncorrect();
             SetInteractable(true);
             selectionSequence = null;
@@ -137,16 +143,20 @@ namespace Lbs.MiniGames.Games.ShapePut
         private IEnumerator ResolveCorrect(RoundedSurface surface)
         {
             yield return CardAnimator.PunchPlace(surface.rectTransform);
+            RoundedSurface fill = surface.transform.Find("Fill")?.GetComponent<RoundedSurface>();
+            Text label = surface.transform.Find("Label")?.GetComponent<Text>();
             surface.color = Success;
+            if (fill) fill.color = Success;
+            if (label) label.color = Color.white;
             if (successSfx) audio?.PlaySfx(successSfx);
             PlayRandom(compliments);
             celebrationPresenter.ShowCelebration(board, CelebrationInput());
             yield return new WaitForSecondsRealtime(celebrationPresenter.PresentationDelay);
             celebrationPresenter.ShowFinal(CelebrationInput());
-            services?.GameLauncher.Complete(new MiniGameResult(LevelSequenceRoute.ShapePutGameId, MiniGameCompletionState.Completed, state.Score, 1, 1, services.Session.SelectedDifficultyId));
+            services?.GameLauncher.Complete(new MiniGameResult(LevelSequenceRoute.AgeCompareGameId, MiniGameCompletionState.Completed, state.Score, 1, 1, services.Session.SelectedDifficultyId));
             state.FinishCelebration();
             yield return new WaitForSecondsRealtime(2f);
-            services?.LevelSequence?.Advance(LevelSequenceRoute.ShapePutSuccessTarget);
+            state.EnableFinalInput();
             selectionSequence = null;
         }
 
