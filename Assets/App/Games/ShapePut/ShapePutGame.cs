@@ -11,17 +11,17 @@ using Lbs.MiniGames.Shared.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Lbs.MiniGames.Games.AppleMath
+namespace Lbs.MiniGames.Games.ShapePut
 {
-    public sealed class AppleMathGame : MonoBehaviour, IAppScene, ILevelTransitionParticipant
+    public sealed class ShapePutGame : MonoBehaviour, IAppScene, ILevelTransitionParticipant
     {
         private static readonly Color Background = new(.9686f, .9608f, .9804f);
-        private static readonly Color Ink = new(.14f, .10f, .21f);
         private static readonly Color NormalBorder = new(.78f, .78f, .78f, 1f);
         private static readonly Color Error = new(.70f, .15f, .12f);
         private static readonly Color Success = new(.09f, .48f, .29f);
 
-        [SerializeField] private Sprite equationArtwork;
+        [SerializeField] private Sprite principalArtwork;
+        [SerializeField] private Sprite option1Artwork, option2Artwork, option3Artwork, option4Artwork;
         [SerializeField] private Sprite exitIcon, hongNeutral, hong1, hong2, hong3, finalStar;
         [SerializeField] private Sprite celebration4Star, celebration5Star, circleConfetti, rectangularConfetti, serpentina, serpentina2, serpentina3;
         [SerializeField] private AudioClip instruction, successSfx, failSfx;
@@ -73,38 +73,39 @@ namespace Lbs.MiniGames.Games.AppleMath
             Canvas canvas = GetComponentInParent<Canvas>();
             if (!canvas || board != null) return;
 
-            board = new GameObject("AppleMathBoard", typeof(RectTransform)).GetComponent<RectTransform>();
+            board = new GameObject("ShapePutBoard", typeof(RectTransform)).GetComponent<RectTransform>();
             board.SetParent(canvas.transform, false);
             UiFactory.Stretch(board, 0);
             UiFactory.Stretch(UiFactory.CreateImage(board, "Background", Background).rectTransform, 0);
 
-            Image equation = UiFactory.CreateImage(board, "Equation", Color.white);
-            equation.sprite = equationArtwork;
-            equation.preserveAspect = true;
-            equation.raycastTarget = false;
-            Pixel(equation.rectTransform, new Vector2(960f, 430f), new Vector2(1600f, 750f));
+            Image principal = UiFactory.CreateImage(board, "Principal", Color.white);
+            principal.sprite = principalArtwork;
+            principal.preserveAspect = true;
+            principal.raycastTarget = false;
+            Pixel(principal.rectTransform, new Vector2(1030f, 410f), new Vector2(1120f, 710f));
 
             levelChrome = LevelChromeFactory.Build(board, font, exitIcon, hongNeutral, ReturnToLobby, ToggleInstruction);
             hongImage = levelChrome.HongImage;
-            CreateOption(AppleMathRule.Option3, new Vector2(475f, 920f));
-            CreateOption(AppleMathRule.Option2, new Vector2(960f, 920f));
-            CreateOption(AppleMathRule.Option1, new Vector2(1445f, 920f));
+            CreateOption(ShapePutRule.Option1, option1Artwork, new Vector2(470f, 900f));
+            CreateOption(ShapePutRule.Option2, option2Artwork, new Vector2(865f, 900f));
+            CreateOption(ShapePutRule.Option3, option3Artwork, new Vector2(1260f, 900f));
+            CreateOption(ShapePutRule.Option4, option4Artwork, new Vector2(1655f, 900f));
             EnsureScoreFont();
         }
 
-        private void CreateOption(string answerId, Vector2 center)
+        private void CreateOption(string answerId, Sprite artwork, Vector2 center)
         {
-            RoundedSurface surface = UiFactory.CreateRoundedSurface(board, $"Option{answerId}", NormalBorder, 22f);
-            Pixel(surface.rectTransform, center, new Vector2(320f, 145f));
-            surface.OutlineThickness = 4f;
-            RoundedSurface fill = UiFactory.CreateRoundedSurface(surface.rectTransform, "Fill", Color.white, 18f, false);
+            RoundedSurface surface = UiFactory.CreateRoundedSurface(board, answerId + "Card", NormalBorder, 26f);
+            Pixel(surface.rectTransform, center, new Vector2(350f, 185f));
+            surface.OutlineThickness = 5f;
+            RoundedSurface fill = UiFactory.CreateRoundedSurface(surface.rectTransform, "CardFill", Color.white, 21f, false);
             UiFactory.Stretch(fill.rectTransform, surface.OutlineThickness);
 
-            Text label = UiFactory.CreateText(surface.rectTransform, "Label", font, 62, TextAnchor.MiddleCenter, Ink);
-            label.text = answerId;
-            label.fontStyle = FontStyle.Normal;
-            label.raycastTarget = false;
-            UiFactory.Stretch(label.rectTransform, 0);
+            Image image = UiFactory.CreateImage(surface.rectTransform, "Artwork", Color.white);
+            image.sprite = artwork;
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+            UiFactory.Stretch(image.rectTransform, 22f);
 
             Button button = surface.gameObject.AddComponent<Button>();
             button.targetGraphic = surface;
@@ -117,23 +118,17 @@ namespace Lbs.MiniGames.Games.AppleMath
             if (state.Phase != SelectionPhase.Ready) return;
             StopInstruction();
             SetInteractable(false);
-            bool correct = state.Select(answerId, AppleMathRule.CorrectAnswer);
+            bool correct = state.Select(answerId, ShapePutRule.CorrectAnswer);
             selectionSequence = StartCoroutine(correct ? ResolveCorrect(surface) : ResolveIncorrect(surface));
         }
 
         private IEnumerator ResolveIncorrect(RoundedSurface surface)
         {
-            RoundedSurface fill = surface.transform.Find("Fill")?.GetComponent<RoundedSurface>();
-            Text label = surface.transform.Find("Label")?.GetComponent<Text>();
             surface.color = Error;
-            if (fill) fill.color = Error;
-            if (label) label.color = Color.white;
             if (failSfx) audio?.PlaySfx(failSfx);
             PlayRandom(encouragements);
             yield return CardAnimator.ShakeBoard(board);
             surface.color = NormalBorder;
-            if (fill) fill.color = Color.white;
-            if (label) label.color = Ink;
             state.FinishIncorrect();
             SetInteractable(true);
             selectionSequence = null;
@@ -142,20 +137,16 @@ namespace Lbs.MiniGames.Games.AppleMath
         private IEnumerator ResolveCorrect(RoundedSurface surface)
         {
             yield return CardAnimator.PunchPlace(surface.rectTransform);
-            RoundedSurface fill = surface.transform.Find("Fill")?.GetComponent<RoundedSurface>();
-            Text label = surface.transform.Find("Label")?.GetComponent<Text>();
             surface.color = Success;
-            if (fill) fill.color = Success;
-            if (label) label.color = Color.white;
             if (successSfx) audio?.PlaySfx(successSfx);
             PlayRandom(compliments);
             celebrationPresenter.ShowCelebration(board, CelebrationInput());
             yield return new WaitForSecondsRealtime(celebrationPresenter.PresentationDelay);
             celebrationPresenter.ShowFinal(CelebrationInput());
-            services?.GameLauncher.Complete(new MiniGameResult(LevelSequenceRoute.AppleMathGameId, MiniGameCompletionState.Completed, state.Score, 1, 1, services.Session.SelectedDifficultyId));
+            services?.GameLauncher.Complete(new MiniGameResult(LevelSequenceRoute.ShapePutGameId, MiniGameCompletionState.Completed, state.Score, 1, 1, services.Session.SelectedDifficultyId));
             state.FinishCelebration();
             yield return new WaitForSecondsRealtime(2f);
-            services?.LevelSequence?.Advance(LevelSequenceRoute.AppleMathSuccessTarget);
+            state.EnableFinalInput();
             selectionSequence = null;
         }
 
