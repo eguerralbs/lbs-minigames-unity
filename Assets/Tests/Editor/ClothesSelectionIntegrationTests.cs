@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Lbs.MiniGames.Bootstrap;
 using Lbs.MiniGames.Catalog;
 using Lbs.MiniGames.Navigation;
@@ -11,9 +12,130 @@ namespace Lbs.MiniGames.Tests
     public sealed class ClothesSelectionIntegrationTests
     {
         [Test]
-        public void ShapeSuccessRoute_TargetsClothesSelection()
+        public void FunnyFaceStartsVisualSequence_AtShapeAnalogy()
         {
-            Assert.AreEqual("clothes.selection", LevelSequenceRoute.ShapeAnalogySuccessTarget);
+            Assert.AreEqual("shape.analogy", LevelSequenceRoute.FunnyFaceDragSuccessTarget);
+        }
+
+        [Test]
+        public void VisualSequence_UsesEveryGameOnceAndEndsAtAgeCompare()
+        {
+            string[] actual =
+            {
+                LevelSequenceRoute.FunnyFaceDragGameId,
+                LevelSequenceRoute.FunnyFaceDragSuccessTarget,
+                LevelSequenceRoute.ShapeAnalogySuccessTarget,
+                LevelSequenceRoute.WolfieFlasksSuccessTarget,
+                LevelSequenceRoute.Thinking3DSuccessTarget,
+                LevelSequenceRoute.AnimalDragSuccessTarget,
+                LevelSequenceRoute.KitchenMathLogicSuccessTarget,
+                LevelSequenceRoute.TrianglesShapeLogicSuccessTarget,
+                LevelSequenceRoute.CircleMathSuccessTarget,
+                LevelSequenceRoute.CubePlatformSuccessTarget,
+                LevelSequenceRoute.ChemistrySelectionSuccessTarget,
+                LevelSequenceRoute.CandiesLogicSuccessTarget,
+                LevelSequenceRoute.ClothesSelectionSuccessTarget,
+                LevelSequenceRoute.MakeAnEmojiDragSuccessTarget,
+                LevelSequenceRoute.LadyBugPlaceSuccessTarget,
+                LevelSequenceRoute.StickersPlacementSuccessTarget,
+                LevelSequenceRoute.ObjectSelectionSuccessTarget,
+                LevelSequenceRoute.BubbleMathSuccessTarget,
+                LevelSequenceRoute.TrianglesCountSuccessTarget,
+                LevelSequenceRoute.ThinkingFiguresSuccessTarget,
+                LevelSequenceRoute.SquaresSuccessionSuccessTarget,
+                LevelSequenceRoute.FractionSuccessionSuccessTarget,
+                LevelSequenceRoute.ShortestRouteSuccessTarget,
+                LevelSequenceRoute.AppleMathSuccessTarget,
+                LevelSequenceRoute.ShapePutSuccessTarget
+            };
+
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    "funnyface.drag",
+                    "shape.analogy",
+                    "wolfie.flasks",
+                    "thinking.3d",
+                    "animal.drag",
+                    "kitchen.math.logic",
+                    "triangles.shape.logic",
+                    "circle.math",
+                    "cube.platform",
+                    "chemistry.selection",
+                    "candies.logic",
+                    "clothes.selection",
+                    "make.emoji.drag",
+                    "ladybug.place",
+                    "stickers.placement",
+                    "object.selection",
+                    "bubble.math",
+                    "triangles.count",
+                    "thinking.figures",
+                    "squares.succession",
+                    "fraction.succession",
+                    "shortest.route",
+                    "apple.math",
+                    "shape.put",
+                    "age.compare"
+                },
+                actual);
+
+        }
+
+        [Test]
+        public void Catalog_OrdersVisibleLogicCardsLikeVisualSequence()
+        {
+            GameCatalog catalog = AssetDatabase.LoadAssetAtPath<GameCatalog>("Assets/App/Catalog/Data/MiniGameCatalog.asset");
+            Assert.NotNull(catalog);
+
+            List<string> actual = new();
+            foreach (GameDefinition game in catalog.Games)
+            {
+                if (game != null && game.VisibleInHub && game.Category != null && game.Category.CategoryId == "logica")
+                {
+                    actual.Add(game.GameId);
+                }
+            }
+
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    "funnyface.drag",
+                    "shape.analogy",
+                    "wolfie.flasks",
+                    "thinking.3d",
+                    "animal.drag",
+                    "kitchen.math.logic",
+                    "triangles.shape.logic",
+                    "circle.math",
+                    "cube.platform",
+                    "chemistry.selection",
+                    "candies.logic",
+                    "clothes.selection",
+                    "make.emoji.drag",
+                    "ladybug.place",
+                    "stickers.placement",
+                    "object.selection",
+                    "bubble.math",
+                    "triangles.count",
+                    "thinking.figures",
+                    "squares.succession",
+                    "fraction.succession",
+                    "shortest.route",
+                    "apple.math",
+                    "shape.put",
+                    "age.compare"
+                },
+                actual);
+
+            AssertCatalogVisibleName(catalog, "shortest.route", "Logic");
+            AssertCatalogVisibleName(catalog, "apple.math", "Math");
+            AssertCatalogVisibleName(catalog, "shape.put", "Logic");
+            AssertCatalogVisibleName(catalog, "age.compare", "Math");
+            AssertCatalogHubSubjectLabel(catalog, "shortest.route", "Logic");
+            AssertCatalogHubSubjectLabel(catalog, "apple.math", "Math");
+            AssertCatalogHubSubjectLabel(catalog, "shape.put", "Logic");
+            AssertCatalogHubSubjectLabel(catalog, "age.compare", "Math");
         }
 
         [Test]
@@ -76,6 +198,20 @@ namespace Lbs.MiniGames.Tests
                 ConfigureCount++;
                 InstructionStarts++;
             }
+        }
+
+        private static void AssertCatalogVisibleName(GameCatalog catalog, string gameId, string expectedVisibleName)
+        {
+            GameDefinition game = catalog.FindGameById(gameId);
+            Assert.NotNull(game);
+            Assert.AreEqual(expectedVisibleName, game.VisibleName);
+        }
+
+        private static void AssertCatalogHubSubjectLabel(GameCatalog catalog, string gameId, string expectedHubSubjectLabel)
+        {
+            GameDefinition game = catalog.FindGameById(gameId);
+            Assert.NotNull(game);
+            Assert.AreEqual(expectedHubSubjectLabel, game.HubSubjectLabel);
         }
     }
 }

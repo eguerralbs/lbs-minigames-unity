@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ShapePutGame
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameDefinition
   gameId: shape.put
-  visibleName: Shape-Put
+  visibleName: Logic
+  hubSubjectLabel: Logic
   category: {fileID: 11400000, guid: 883620bcff84447a797cc002b7934e11, type: 2}
   thumbnail: {fileID: 21300000, guid: f58d38ea0e1540afa3e36341b5c8ac7c, type: 3}
   sceneName: ShapePut

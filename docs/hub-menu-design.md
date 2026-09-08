@@ -75,7 +75,7 @@ The `LobbyController` Inspector exposes the following approved layout fields: `m
 Each complete rounded card is one target; do not require a separate small “Play” button.
 
 1. **Art zone:** a rounded 16:9 (width / height) thumbnail frame with an edge-to-edge replaceable abstract illustration or simple line icon, intentionally cropped or fitted to identify the card at a glance.
-2. **Title zone:** one short game name. Any example such as `Game title` is a placeholder, not proposed game content or final naming.
+2. **Title zone:** in the `logica` section, show the explicit subject label assigned in the catalog instead of the game name; all other sections show the short game name. Any example such as `Game title` is a placeholder, not proposed game content or final naming.
 3. **Optional metadata:** one concise, non-essential label only when it genuinely helps recognition. Omit it rather than creating dense card copy.
 4. **State cue:** border, tonal surface change, or visible badge for availability and feedback—never text alone.
 

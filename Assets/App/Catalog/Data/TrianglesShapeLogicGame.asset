@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameDefinition
   gameId: triangles.shape.logic
   visibleName: Triangles Shape Logic
+  hubSubjectLabel: Logic
   category: {fileID: 11400000, guid: 883620bcff84447a797cc002b7934e11, type: 2}
   thumbnail: {fileID: 21300000, guid: 27d3786fb4181134fa338898f6c6afff, type: 3}
   sceneName: TrianglesShapeLogic

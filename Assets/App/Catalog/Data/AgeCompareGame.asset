@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: AgeCompareGame
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameDefinition
   gameId: age.compare
-  visibleName: Age Compare
+  visibleName: Math
+  hubSubjectLabel: Math
   category: {fileID: 11400000, guid: 883620bcff84447a797cc002b7934e11, type: 2}
   thumbnail: {fileID: 21300000, guid: 6856e7ef7bca4afb919f827fb67ab558, type: 3}
   sceneName: AgeCompare

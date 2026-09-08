@@ -20,4 +20,4 @@ MonoBehaviour:
   description: Resuelve sumas y restas de manera divertida.
   supportedDifficulties: []
   defaultDifficulty: {fileID: 0}
-  visibleInHub: 1
+  visibleInHub: 0

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: LogicaCategory
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameCategory
   categoryId: logica
-  displayName: "L\xF3gica, matem\xE1ticas, lenguaje"
+  displayName: Logic & Math
   description: "Ejercita el pensamiento deductivo, la memoria y la resoluci\xF3n
     de problemas."
