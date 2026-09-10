@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Placeholder.juega-aprende.memoria-animales
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameDefinition
   gameId: juega-aprende.memoria-animales
-  visibleName: Animal Memory
+  visibleName: Memoria de animales
   category: {fileID: 11400000, guid: 7402c3cde37344e38b42ae274515b6bb, type: 2}
-  thumbnail: {fileID: 21300000, guid: d65a768699e34583a6b836d70d439057, type: 3}
-  sceneName:
-  description: Contenido en preparación.
+  thumbnail: {fileID: 21300000, guid: a9320ce35fe742569974efb0965c3225, type: 3}
+  sceneName: Memorama
+  description: Encuentra las parejas de animales.
   supportedDifficulties: []
   defaultDifficulty: {fileID: 0}
   visibleInHub: 1

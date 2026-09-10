@@ -46,6 +46,13 @@ namespace Lbs.MiniGames.Tests
         }
 
         [Test]
+        public void PlayVoiceOneShot_Null_DoesNotThrow_And_IsVoicePlayingStaysFalse()
+        {
+            Assert.DoesNotThrow(() => service.PlayVoiceOneShot(null));
+            Assert.IsFalse(service.IsVoicePlaying());
+        }
+
+        [Test]
         public void PlayVoice_And_StopVoice_DoNotThrow_And_IsVoicePlayingContractHolds()
         {
             var clip = AudioClip.Create("voice", 441, 1, 44100, false);
@@ -55,6 +62,34 @@ namespace Lbs.MiniGames.Tests
                 // In EditMode isPlaying is false, so IsVoicePlaying will be false - we only verify StopVoice clears without throw
                 Assert.DoesNotThrow(() => service.StopVoice());
                 Assert.IsFalse(service.IsVoicePlaying(clip));
+                Assert.IsFalse(service.IsVoicePlaying());
+            }
+            finally { Object.DestroyImmediate(clip); }
+        }
+
+        [Test]
+        public void DisablingHost_StopsAndClearsVoicePlayback()
+        {
+            var clip = AudioClip.Create("voice", 441, 1, 44100, false);
+            try
+            {
+                service.PlayVoice(clip);
+                AudioSource voiceSource = null;
+                foreach (AudioSource source in host.GetComponents<AudioSource>())
+                {
+                    if (source.clip == clip)
+                    {
+                        voiceSource = source;
+                        break;
+                    }
+                }
+
+                Assert.IsNotNull(voiceSource);
+
+                host.SetActive(false);
+
+                Assert.IsNull(voiceSource.clip);
+                Assert.IsFalse(voiceSource.isPlaying);
                 Assert.IsFalse(service.IsVoicePlaying());
             }
             finally { Object.DestroyImmediate(clip); }
