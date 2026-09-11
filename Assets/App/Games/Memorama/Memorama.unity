@@ -250,7 +250,14 @@ MonoBehaviour:
   cardBack: {fileID: 21300000, guid: 996f38cf39344b64a84cbcadd0fbfdbb, type: 3}
   level2Back: {fileID: 21300000, guid: cd9d81a352d94c10863a9784767e5404, type: 3}
   level3Back: {fileID: 21300000, guid: ffd05d5230294a4797330f021034ce59, type: 3}
+  level4Back: {fileID: 21300000, guid: d202df00c6c24dff8739d0aefc9e1b15, type: 3}
   cardFront: {fileID: 21300000, guid: a9320ce35fe742569974efb0965c3225, type: 3}
+  level1Front: {fileID: 21300000, guid: a9320ce35fe742569974efb0965c3225, type: 3}
+  level2Front: {fileID: 21300000, guid: e1866dfb96de460d8e475f830035ecbc, type: 3}
+  level3Front: {fileID: 21300000, guid: 05f623cddfd74ad7a35e4df5ac68f00e, type: 3}
+  level4Front: {fileID: 21300000, guid: 8879f471fcd14ae787113794f661fac8, type: 3}
+  level5Front: {fileID: 21300000, guid: 6e477713b14849788de9eb72cf9d19ac, type: 3}
+  level6Front: {fileID: 21300000, guid: 5d9b540ebbaa46aab83c52789e88d23f, type: 3}
   cowFront: {fileID: 21300000, guid: 6a097bf5113d49b3ba2ee33d60be99aa, type: 3}
   rabbitFront: {fileID: 21300000, guid: 6a097bf5113d49b3ba2ee33d60be99aa, type: 3}
   dogFront: {fileID: 21300000, guid: 0b0eacd1eebb4268af57be77789a4655, type: 3}
@@ -276,6 +283,9 @@ MonoBehaviour:
   toastFont: {fileID: 12800000, guid: 1e5b7fa8d8db455fbf7488bfcc005457, type: 3}
   fourStarParticle: {fileID: 21300000, guid: 7aaa93add96570448ae05871b439e5cf, type: 3}
   fiveStarParticle: {fileID: 21300000, guid: 2368f1c0bdbc43842a0f38eb0cdc423e, type: 3}
+  finalStar: {fileID: 21300000, guid: 2368f1c0bdbc43842a0f38eb0cdc423e, type: 3}
+  scoreFont: {fileID: 12800000, guid: dbefde803f6e494eaa7003061af0e9cf, type: 3}
+  celebrationConfiguration: {fileID: 0}
 --- !u!1 &3000
 GameObject:
   m_ObjectHideFlags: 0

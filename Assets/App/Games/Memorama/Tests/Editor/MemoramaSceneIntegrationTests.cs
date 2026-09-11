@@ -102,8 +102,13 @@ namespace Lbs.MiniGames.Tests
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level1Back.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level2Back.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level3Back.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level4Back.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level1Front.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level2Front.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level3Front.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level4Front.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level5Front.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level6Front.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Cow.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Cat.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Sheep.png"), Is.Not.Null);
@@ -134,6 +139,13 @@ namespace Lbs.MiniGames.Tests
                 var serializedGame = new SerializedObject(game);
                 Assert.That(serializedGame.FindProperty("level2Back").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("level3Back").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("level4Back").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("level1Front").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("level2Front").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("level3Front").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("level4Front").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("level5Front").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("level6Front").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("cowArtwork").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("cowNameAudio").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("catArtwork").objectReferenceValue, Is.Not.Null);
@@ -155,6 +167,8 @@ namespace Lbs.MiniGames.Tests
                     Is.SameAs(AssetDatabase.LoadAssetAtPath<Font>("Assets/App/Theme/Fonts/Nunito-ExtraBold.ttf")));
                 Assert.That(serializedGame.FindProperty("fourStarParticle").objectReferenceValue, Is.SameAs(fourStar));
                 Assert.That(serializedGame.FindProperty("fiveStarParticle").objectReferenceValue, Is.SameAs(fiveStar));
+                Assert.That(serializedGame.FindProperty("finalStar").objectReferenceValue, Is.SameAs(fiveStar));
+                Assert.That(serializedGame.FindProperty("scoreFont").objectReferenceValue, Is.Not.Null);
             }
             finally
             {
