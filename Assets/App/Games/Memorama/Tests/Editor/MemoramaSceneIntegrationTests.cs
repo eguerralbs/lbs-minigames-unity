@@ -67,8 +67,11 @@ namespace Lbs.MiniGames.Tests
                     button.transition == Selectable.Transition.None && button.targetGraphic == null), Is.True);
                 Assert.That(cards.All(button => !button.interactable), Is.True);
                 Assert.That(cards.All(button => button.transform.Find("Animal").gameObject.activeSelf), Is.True);
-                Assert.That(cards.All(button => button.transform.Find("Face").GetComponent<Image>().sprite ==
-                    AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level1Front.png")), Is.True);
+                Sprite stickerBlue = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/StickerBlue.png");
+                Sprite stickerPink = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/StickerPink.png");
+                Sprite[] fronts = cards.Select(button => button.transform.Find("Face").GetComponent<Image>().sprite).ToArray();
+                Assert.That(fronts.Count(front => front == stickerBlue), Is.EqualTo(2));
+                Assert.That(fronts.Count(front => front == stickerPink), Is.EqualTo(2));
 
                 Transform toast = hierarchy.Single(item => item.name == "AnimalNameToast");
                 Transform fillTransform = toast.Find("Fill");
@@ -99,8 +102,12 @@ namespace Lbs.MiniGames.Tests
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level1Back.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level1Front.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Cow.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Rabbit.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Dog.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Pig.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Cow.mp3"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Rabbit.mp3"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Dog.mp3"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Pig.mp3"), Is.Not.Null);
             AudioClip initialInstruction = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/InitialInstruction.mp3");
             Assert.That(initialInstruction, Is.Not.Null);
@@ -118,8 +125,15 @@ namespace Lbs.MiniGames.Tests
                     .SelectMany(root => root.GetComponentsInChildren<MemoramaGame>(true))
                     .Single();
                 var serializedGame = new SerializedObject(game);
+                Assert.That(serializedGame.FindProperty("cowArtwork").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("cowNameAudio").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("rabbitNameAudio").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("dogNameAudio").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("pigNameAudio").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("cowFront").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("rabbitFront").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("dogFront").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("pigFront").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("initialInstruction").objectReferenceValue, Is.SameAs(initialInstruction));
                 Assert.That(serializedGame.FindProperty("matchSuccessSfx").objectReferenceValue, Is.SameAs(successSfx));
                 Assert.That(serializedGame.FindProperty("toastFont").objectReferenceValue,

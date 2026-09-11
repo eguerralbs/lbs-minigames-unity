@@ -51,6 +51,23 @@ namespace Lbs.MiniGames.Tests
             Assert.AreEqual(MemoramaCardState.Matched, board.GetCardState(3));
         }
 
+        [Test]
+        public void ThreePairBoard_CompletesWhenEachPairIsMatched()
+        {
+            var board = new MemoramaBoard(new[] { "rabbit", "dog", "pig", "rabbit", "dog", "pig" });
+
+            board.Select(0);
+            board.Select(3);
+            board.Select(1);
+            board.Select(4);
+            board.Select(2);
+            board.Select(5);
+
+            Assert.AreEqual(6, board.CardCount);
+            Assert.AreEqual(3, board.MatchedPairs);
+            Assert.AreEqual(MemoramaPhase.Complete, board.Phase);
+        }
+
         private static MemoramaBoard CreateBoard() => new(new[] { "cow", "pig", "cow", "pig" });
     }
 }

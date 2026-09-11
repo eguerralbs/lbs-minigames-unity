@@ -14,19 +14,27 @@ namespace Lbs.MiniGames.Games.Memorama
     {
         public const string StableGameId = "juega-aprende.memoria-animales";
 
-        private static readonly string[] AnimalIds = { "cow", "pig", "cow", "pig" };
-        private static readonly Vector2[] CardCenters =
+        private static readonly string[] Level1AnimalIds = { "cow", "pig", "cow", "pig" };
+        private static readonly Vector2[] Level1CardCenters =
         {
             new(735f, 390f), new(1185f, 390f), new(735f, 790f), new(1185f, 790f)
         };
-        private static readonly int[] OpeningShufflePairs = { 0, 3, 1, 2, 0, 1 };
-        private const float OpeningPreviewDuration = 1f;
-        private const float OpeningFlipDuration = 0.2f;
-        private const float CardFlipDuration = 0.2f;
-        private const float OpeningShuffleDuration = 2f;
-        private const int OpeningShuffleSwapCount = 20;
+        private static readonly string[] Level2AnimalIds = { "rabbit", "dog", "pig", "rabbit", "dog", "pig" };
+        private static readonly Vector2[] Level2CardCenters =
+        {
+            new(510f, 390f), new(960f, 390f), new(1410f, 390f),
+            new(510f, 790f), new(960f, 790f), new(1410f, 790f)
+        };
+        private const float OpeningPreviewDuration = 0.5f;
+        private const float OpeningFlipDuration = 0.32f;
+        private const float CardFlipDuration = 0.32f;
+        private const float OpeningShuffleDuration = 1.5f;
+        private const int OpeningShuffleSwapCount = 10;
         private const float ShuffleSwapDuration = OpeningShuffleDuration / OpeningShuffleSwapCount;
         private const float ShuffleTiltDegrees = 7f;
+        private const float LevelTransitionDuration = 0.6f;
+        private const float LevelCompletionDelay = 2f;
+        private const float ReferenceWidth = 1920f;
         private const string ComplimentsResourcePath = "ShapeAnalogy/Voice/Compliments/en";
         private const float CompletionVoiceWaitPadding = 0.5f;
         private const int ToastFontSize = 56;
@@ -38,11 +46,17 @@ namespace Lbs.MiniGames.Games.Memorama
         [SerializeField] private Sprite cardBack;
         [SerializeField] private Sprite cardFront;
         [SerializeField] private Sprite cowFront;
+        [SerializeField] private Sprite rabbitFront;
+        [SerializeField] private Sprite dogFront;
         [SerializeField] private Sprite pigFront;
         [SerializeField] private Sprite cowArtwork;
+        [SerializeField] private Sprite rabbitArtwork;
+        [SerializeField] private Sprite dogArtwork;
         [SerializeField] private Sprite pigArtwork;
         [SerializeField] private Sprite exitIcon;
         [SerializeField] private AudioClip cowNameAudio;
+        [SerializeField] private AudioClip rabbitNameAudio;
+        [SerializeField] private AudioClip dogNameAudio;
         [SerializeField] private AudioClip pigNameAudio;
         [SerializeField] private AudioClip initialInstruction;
         [SerializeField] private AudioClip matchSuccessSfx;
@@ -52,13 +66,16 @@ namespace Lbs.MiniGames.Games.Memorama
         [SerializeField] private Sprite fourStarParticle;
         [SerializeField] private Sprite fiveStarParticle;
 
-        private readonly CardView[] cardViews = new CardView[AnimalIds.Length];
-        private readonly Coroutine[] cardFlipAnimations = new Coroutine[AnimalIds.Length];
+        private CardView[] cardViews = new CardView[0];
+        private Coroutine[] cardFlipAnimations = new Coroutine[0];
         private AppServices services;
         private IAppAudioService audio;
         private MemoramaBoard board;
         private bool mismatchHiding;
         private RectTransform boardRoot;
+        private RectTransform levelRoot;
+        private Vector2[] cardCenters;
+        private int currentLevelIndex;
         private GameObject nameToast;
         private Text nameToastLabel;
         private Coroutine mismatchResolution;
@@ -66,6 +83,7 @@ namespace Lbs.MiniGames.Games.Memorama
         private Coroutine openingSequence;
         private Coroutine completionParticlesCleanup;
         private Coroutine completionComplimentPlayback;
+        private Coroutine levelTransition;
         private FinalCelebrationParticles completionParticles;
         private bool openingActive;
         private bool openingCardsVisible;
@@ -75,23 +93,21 @@ namespace Lbs.MiniGames.Games.Memorama
 
         public void Configure(AppServices appServices)
         {
+            StopLevelTransition();
             StopMismatchResolution();
             StopCardFlipAnimations();
             StopOpeningSequence();
             ClearCompletionParticles();
             StopCompletionComplimentPlayback();
             RestoreCardTransforms();
+            ClearCurrentLevel();
             services = appServices;
             audio = appServices?.Audio;
             EnsureCompliments();
-            board = new MemoramaBoard(AnimalIds);
             Build();
             if (boardRoot == null) return;
-            openingActive = true;
-            openingCardsVisible = true;
-            RefreshAllCards();
-            SetCardsInteractable(false);
-            openingSequence = StartCoroutine(PlayOpeningSequence());
+            BuildLevel(0);
+            StartOpeningSequence();
         }
 
         private void Build()
@@ -113,7 +129,43 @@ namespace Lbs.MiniGames.Games.Memorama
             chrome.HongButton.gameObject.SetActive(false);
 
             CreateNameToast();
+        }
+
+        private void BuildLevel(int levelIndex)
+        {
+            currentLevelIndex = levelIndex;
+            string[] animalIds = ShuffleAnimalIds(levelIndex == 0 ? Level1AnimalIds : Level2AnimalIds);
+            cardCenters = levelIndex == 0 ? Level1CardCenters : Level2CardCenters;
+            board = new MemoramaBoard(animalIds);
+            cardViews = new CardView[board.CardCount];
+            cardFlipAnimations = new Coroutine[board.CardCount];
+
+            levelRoot = new GameObject($"Level{levelIndex + 1}Board", typeof(RectTransform)).GetComponent<RectTransform>();
+            levelRoot.SetParent(boardRoot, false);
+            UiFactory.Stretch(levelRoot, 0f);
             for (int index = 0; index < cardViews.Length; index++) CreateCard(index);
+            RefreshAllCards();
+        }
+
+        private static string[] ShuffleAnimalIds(string[] source)
+        {
+            string[] shuffled = (string[])source.Clone();
+            for (int index = shuffled.Length - 1; index > 0; index--)
+            {
+                int swapIndex = Random.Range(0, index + 1);
+                (shuffled[index], shuffled[swapIndex]) = (shuffled[swapIndex], shuffled[index]);
+            }
+
+            return shuffled;
+        }
+
+        private void StartOpeningSequence()
+        {
+            openingActive = true;
+            openingCardsVisible = true;
+            RefreshAllCards();
+            SetCardsInteractable(false);
+            openingSequence = StartCoroutine(PlayOpeningSequence());
         }
 
         private void CreateNameToast()
@@ -139,9 +191,9 @@ namespace Lbs.MiniGames.Games.Memorama
 
         private void CreateCard(int index)
         {
-            Button button = UiFactory.CreateButton(boardRoot, $"Card{index + 1}", font, string.Empty, Color.clear);
+            Button button = UiFactory.CreateButton(levelRoot, $"Card{index + 1}", font, string.Empty, Color.clear);
             RectTransform cardRect = button.GetComponent<RectTransform>();
-            Pixel(cardRect, CardCenters[index], new Vector2(350f, 350f));
+            Pixel(cardRect, cardCenters[index], new Vector2(350f, 350f));
 
             Image face = UiFactory.CreateImage(cardRect, "Face", Color.white);
             face.preserveAspect = true;
@@ -187,6 +239,7 @@ namespace Lbs.MiniGames.Games.Memorama
                 {
                     ShowCompletionParticles();
                     PlayCompletionComplimentAfterFinalName(NameAudioFor(board.GetAnimalId(index)));
+                    if (currentLevelIndex == 0) levelTransition = StartCoroutine(TransitionToNextLevel());
                 }
             }
         }
@@ -232,7 +285,7 @@ namespace Lbs.MiniGames.Games.Memorama
         {
             ClearCompletionParticles();
             RectTransform particlesRoot = new GameObject("CompletionStars", typeof(RectTransform)).GetComponent<RectTransform>();
-            particlesRoot.SetParent(boardRoot, false);
+            particlesRoot.SetParent(levelRoot, false);
             UiFactory.Stretch(particlesRoot, 0f);
             particlesRoot.SetAsLastSibling();
             completionParticles = particlesRoot.gameObject.AddComponent<FinalCelebrationParticles>();
@@ -380,8 +433,10 @@ namespace Lbs.MiniGames.Games.Memorama
 
             for (int swapIndex = 0; swapIndex < OpeningShuffleSwapCount; swapIndex++)
             {
-                int pairIndex = (swapIndex * 2) % OpeningShufflePairs.Length;
-                yield return AnimateCardSwap(OpeningShufflePairs[pairIndex], OpeningShufflePairs[pairIndex + 1]);
+                int firstIndex = Random.Range(0, cardViews.Length);
+                int secondIndex = Random.Range(0, cardViews.Length - 1);
+                if (secondIndex >= firstIndex) secondIndex++;
+                yield return AnimateCardSwap(firstIndex, secondIndex);
             }
 
             audio?.StopVoiceIfPlaying(initialInstruction);
@@ -464,13 +519,67 @@ namespace Lbs.MiniGames.Games.Memorama
             audio?.StopVoiceIfPlaying(initialInstruction);
         }
 
+        private IEnumerator TransitionToNextLevel()
+        {
+            yield return new WaitForSecondsRealtime(LevelCompletionDelay);
+
+            StopMismatchResolution();
+            StopCardFlipAnimations();
+            StopOpeningSequence();
+            ClearCompletionParticles();
+
+            RectTransform outgoingLevel = levelRoot;
+            openingCardsVisible = true;
+            BuildLevel(1);
+            RectTransform incomingLevel = levelRoot;
+            incomingLevel.anchoredPosition = new Vector2(ReferenceWidth, 0f);
+            SetCardsInteractable(false);
+
+            float elapsed = 0f;
+            while (elapsed < LevelTransitionDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float progress = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / LevelTransitionDuration));
+                outgoingLevel.anchoredPosition = new Vector2(Mathf.Lerp(0f, -ReferenceWidth, progress), 0f);
+                incomingLevel.anchoredPosition = new Vector2(Mathf.Lerp(ReferenceWidth, 0f, progress), 0f);
+                yield return null;
+            }
+
+            incomingLevel.anchoredPosition = Vector2.zero;
+            if (Application.isPlaying) Destroy(outgoingLevel.gameObject);
+            else DestroyImmediate(outgoingLevel.gameObject);
+            StartOpeningSequence();
+            levelTransition = null;
+        }
+
+        private void StopLevelTransition()
+        {
+            if (levelTransition != null) StopCoroutine(levelTransition);
+            levelTransition = null;
+        }
+
+        private void ClearCurrentLevel()
+        {
+            if (levelRoot != null)
+            {
+                if (Application.isPlaying) Destroy(levelRoot.gameObject);
+                else DestroyImmediate(levelRoot.gameObject);
+            }
+
+            levelRoot = null;
+            cardViews = new CardView[0];
+            cardFlipAnimations = new Coroutine[0];
+            cardCenters = null;
+            board = null;
+        }
+
         private void RestoreCardTransforms()
         {
             for (int index = 0; index < cardViews.Length; index++)
             {
                 CardView view = cardViews[index];
                 if (view == null) continue;
-                view.Rect.anchoredPosition = LevelChromeLayout.ToAnchoredPosition(CardCenters[index]);
+                view.Rect.anchoredPosition = LevelChromeLayout.ToAnchoredPosition(cardCenters[index]);
             }
 
             RestoreCardRotations();
@@ -487,7 +596,13 @@ namespace Lbs.MiniGames.Games.Memorama
         private void ShowAnimalName(string animalId)
         {
             if (toastPlayback != null) StopCoroutine(toastPlayback);
-            nameToastLabel.text = animalId == "cow" ? "Cow" : "Pig";
+            nameToastLabel.text = animalId switch
+            {
+                "cow" => "Cow",
+                "rabbit" => "Rabbit",
+                "dog" => "Dog",
+                _ => "Pig"
+            };
             nameToast.SetActive(true);
             ResizeNameToast();
             toastPlayback = StartCoroutine(HideNameToast());
@@ -509,14 +624,33 @@ namespace Lbs.MiniGames.Games.Memorama
             toastPlayback = null;
         }
 
-        private Sprite AnimalFor(string animalId) => animalId == "cow" ? cowArtwork : pigArtwork;
-        private Sprite FrontFor(string animalId) => animalId == "cow"
-            ? (cowFront != null ? cowFront : cardFront)
-            : (pigFront != null ? pigFront : cardFront);
-        private AudioClip NameAudioFor(string animalId) => animalId == "cow" ? cowNameAudio : pigNameAudio;
+        private Sprite AnimalFor(string animalId) => animalId switch
+        {
+            "cow" => cowArtwork,
+            "rabbit" => rabbitArtwork,
+            "dog" => dogArtwork,
+            _ => pigArtwork
+        };
+
+        private Sprite FrontFor(string animalId) => animalId switch
+        {
+            "cow" => cowFront != null ? cowFront : cardFront,
+            "rabbit" => rabbitFront != null ? rabbitFront : cardFront,
+            "dog" => dogFront != null ? dogFront : cardFront,
+            _ => pigFront != null ? pigFront : cardFront
+        };
+
+        private AudioClip NameAudioFor(string animalId) => animalId switch
+        {
+            "cow" => cowNameAudio,
+            "rabbit" => rabbitNameAudio,
+            "dog" => dogNameAudio,
+            _ => pigNameAudio
+        };
 
         private void ReturnToLobby()
         {
+            StopLevelTransition();
             StopMismatchResolution();
             StopCardFlipAnimations();
             StopOpeningSequence();
@@ -529,6 +663,7 @@ namespace Lbs.MiniGames.Games.Memorama
 
         private void OnDisable()
         {
+            StopLevelTransition();
             StopMismatchResolution();
             StopCardFlipAnimations();
             StopOpeningSequence();
