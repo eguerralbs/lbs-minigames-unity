@@ -37,6 +37,8 @@ namespace Lbs.MiniGames.Games.Memorama
         [SerializeField] private Sprite background;
         [SerializeField] private Sprite cardBack;
         [SerializeField] private Sprite cardFront;
+        [SerializeField] private Sprite cowFront;
+        [SerializeField] private Sprite pigFront;
         [SerializeField] private Sprite cowArtwork;
         [SerializeField] private Sprite pigArtwork;
         [SerializeField] private Sprite exitIcon;
@@ -146,8 +148,9 @@ namespace Lbs.MiniGames.Games.Memorama
             face.raycastTarget = false;
             UiFactory.Stretch(face.rectTransform, 0f);
 
+            string animalId = board.GetAnimalId(index);
             Image animal = UiFactory.CreateImage(cardRect, "Animal", Color.white);
-            animal.sprite = AnimalFor(board.GetAnimalId(index));
+            animal.sprite = AnimalFor(animalId);
             animal.preserveAspect = true;
             animal.raycastTarget = false;
             UiFactory.Stretch(animal.rectTransform, 48f);
@@ -156,7 +159,7 @@ namespace Lbs.MiniGames.Games.Memorama
             button.transition = Selectable.Transition.None;
             button.targetGraphic = null;
             button.onClick.AddListener(() => SelectCard(capturedIndex));
-            cardViews[index] = new CardView(button, cardRect, face, animal);
+            cardViews[index] = new CardView(button, cardRect, face, animal, FrontFor(animalId));
         }
 
         private void SelectCard(int index)
@@ -356,7 +359,8 @@ namespace Lbs.MiniGames.Games.Memorama
 
         private void SetCardVisible(CardView view, bool visible)
         {
-            view.Face.sprite = visible ? cardFront : cardBack;
+            view.Face.sprite = visible ? view.Front : cardBack;
+            view.Face.color = Color.white;
             view.Animal.gameObject.SetActive(visible);
         }
 
@@ -506,6 +510,9 @@ namespace Lbs.MiniGames.Games.Memorama
         }
 
         private Sprite AnimalFor(string animalId) => animalId == "cow" ? cowArtwork : pigArtwork;
+        private Sprite FrontFor(string animalId) => animalId == "cow"
+            ? (cowFront != null ? cowFront : cardFront)
+            : (pigFront != null ? pigFront : cardFront);
         private AudioClip NameAudioFor(string animalId) => animalId == "cow" ? cowNameAudio : pigNameAudio;
 
         private void ReturnToLobby()
@@ -543,18 +550,20 @@ namespace Lbs.MiniGames.Games.Memorama
 
         private sealed class CardView
         {
-            public CardView(Button button, RectTransform rect, Image face, Image animal)
+            public CardView(Button button, RectTransform rect, Image face, Image animal, Sprite front)
             {
                 Button = button;
                 Rect = rect;
                 Face = face;
                 Animal = animal;
+                Front = front;
             }
 
             public Button Button { get; }
             public RectTransform Rect { get; }
             public Image Face { get; }
             public Image Animal { get; }
+            public Sprite Front { get; }
         }
     }
 }

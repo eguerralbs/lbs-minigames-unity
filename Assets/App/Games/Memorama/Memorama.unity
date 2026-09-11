@@ -249,6 +249,8 @@ MonoBehaviour:
   background: {fileID: 21300000, guid: 48b98655e2334010936a162934a5a68c, type: 3}
   cardBack: {fileID: 21300000, guid: 996f38cf39344b64a84cbcadd0fbfdbb, type: 3}
   cardFront: {fileID: 21300000, guid: a9320ce35fe742569974efb0965c3225, type: 3}
+  cowFront: {fileID: 21300000, guid: 6a097bf5113d49b3ba2ee33d60be99aa, type: 3}
+  pigFront: {fileID: 21300000, guid: 0b0eacd1eebb4268af57be77789a4655, type: 3}
   cowArtwork: {fileID: 21300000, guid: 7425bc72a7f14e7ca10aa2cc942f9eef, type: 3}
   pigArtwork: {fileID: 21300000, guid: 2959d0c523eb4496a63186d2d547c568, type: 3}
   exitIcon: {fileID: 21300000, guid: b6786969a2db23c4fa75298085496f8a, type: 3}
