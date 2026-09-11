@@ -429,7 +429,7 @@ namespace Lbs.MiniGames.Games.Memorama
         {
             RefreshAllCards();
             SetCardsInteractable(false);
-            audio?.PlayVoice(initialInstruction);
+            if (currentLevelIndex == 0) audio?.PlayVoice(initialInstruction);
 
             yield return new WaitForSecondsRealtime(OpeningPreviewDuration);
             yield return AnimateOpeningFlip();
