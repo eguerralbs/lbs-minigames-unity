@@ -68,6 +68,25 @@ namespace Lbs.MiniGames.Tests
             Assert.AreEqual(MemoramaPhase.Complete, board.Phase);
         }
 
+        [Test]
+        public void FourPairBoard_CompletesWhenEachPairIsMatched()
+        {
+            var board = new MemoramaBoard(new[] { "cat", "sheep", "rabbit", "dog", "cat", "sheep", "rabbit", "dog" });
+
+            board.Select(0);
+            board.Select(4);
+            board.Select(1);
+            board.Select(5);
+            board.Select(2);
+            board.Select(6);
+            board.Select(3);
+            board.Select(7);
+
+            Assert.AreEqual(8, board.CardCount);
+            Assert.AreEqual(4, board.MatchedPairs);
+            Assert.AreEqual(MemoramaPhase.Complete, board.Phase);
+        }
+
         private static MemoramaBoard CreateBoard() => new(new[] { "cow", "pig", "cow", "pig" });
     }
 }

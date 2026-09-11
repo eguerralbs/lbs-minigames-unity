@@ -101,12 +101,18 @@ namespace Lbs.MiniGames.Tests
         {
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level1Back.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level2Back.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level3Back.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level1Front.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level3Front.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Cow.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Cat.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Sheep.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Rabbit.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Dog.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Pig.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Cow.mp3"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Cat.mp3"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Sheep.mp3"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Rabbit.mp3"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Dog.mp3"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/App/Games/Memorama/Audio/Pig.mp3"), Is.Not.Null);
@@ -127,12 +133,19 @@ namespace Lbs.MiniGames.Tests
                     .Single();
                 var serializedGame = new SerializedObject(game);
                 Assert.That(serializedGame.FindProperty("level2Back").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("level3Back").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("cowArtwork").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("cowNameAudio").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("catArtwork").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("sheepArtwork").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("catNameAudio").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("sheepNameAudio").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("rabbitNameAudio").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("dogNameAudio").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("pigNameAudio").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("cowFront").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("catFront").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedGame.FindProperty("sheepFront").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("rabbitFront").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("dogFront").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("pigFront").objectReferenceValue, Is.Not.Null);

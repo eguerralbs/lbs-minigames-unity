@@ -249,20 +249,27 @@ MonoBehaviour:
   background: {fileID: 21300000, guid: 48b98655e2334010936a162934a5a68c, type: 3}
   cardBack: {fileID: 21300000, guid: 996f38cf39344b64a84cbcadd0fbfdbb, type: 3}
   level2Back: {fileID: 21300000, guid: cd9d81a352d94c10863a9784767e5404, type: 3}
+  level3Back: {fileID: 21300000, guid: ffd05d5230294a4797330f021034ce59, type: 3}
   cardFront: {fileID: 21300000, guid: a9320ce35fe742569974efb0965c3225, type: 3}
   cowFront: {fileID: 21300000, guid: 6a097bf5113d49b3ba2ee33d60be99aa, type: 3}
   rabbitFront: {fileID: 21300000, guid: 6a097bf5113d49b3ba2ee33d60be99aa, type: 3}
   dogFront: {fileID: 21300000, guid: 0b0eacd1eebb4268af57be77789a4655, type: 3}
   pigFront: {fileID: 21300000, guid: e31ce8f6d370433fa7840df374f47fd9, type: 3}
+  catFront: {fileID: 21300000, guid: 05f623cddfd74ad7a35e4df5ac68f00e, type: 3}
+  sheepFront: {fileID: 21300000, guid: e31ce8f6d370433fa7840df374f47fd9, type: 3}
   cowArtwork: {fileID: 21300000, guid: 7425bc72a7f14e7ca10aa2cc942f9eef, type: 3}
   rabbitArtwork: {fileID: 21300000, guid: ad8c49b1eeb84bed98d76cc6adac24c0, type: 3}
   dogArtwork: {fileID: 21300000, guid: 68c0dd9fae9e406f99363d3b6f620f37, type: 3}
   pigArtwork: {fileID: 21300000, guid: 2959d0c523eb4496a63186d2d547c568, type: 3}
+  catArtwork: {fileID: 21300000, guid: ce974ada4b72459da52ac3206c05bd50, type: 3}
+  sheepArtwork: {fileID: 21300000, guid: 54fa3af0d07d41b68d4c5c0e206ddc81, type: 3}
   exitIcon: {fileID: 21300000, guid: b6786969a2db23c4fa75298085496f8a, type: 3}
   cowNameAudio: {fileID: 8300000, guid: f169f7dffc8c4cffbf3bc3d350e45a26, type: 3}
   rabbitNameAudio: {fileID: 8300000, guid: 97fa271655344ebab1923d8ec403813a, type: 3}
   dogNameAudio: {fileID: 8300000, guid: 8c4c1e60a818464888dd3eb9638fc64e, type: 3}
   pigNameAudio: {fileID: 8300000, guid: 7ae38d1ccfec48b9930608bdd1f430b5, type: 3}
+  catNameAudio: {fileID: 8300000, guid: 26e134049f854ec49d3a47846c5703b3, type: 3}
+  sheepNameAudio: {fileID: 8300000, guid: b58b334479aa43e9a456515772a378ba, type: 3}
   initialInstruction: {fileID: 8300000, guid: 0f825b01c7a64152a1fdcb8a349d9168, type: 3}
   matchSuccessSfx: {fileID: 8300000, guid: 4c58360cd429fef47914a754ee1bea55, type: 3}
   font: {fileID: 12800000, guid: dbefde803f6e494eaa7003061af0e9cf, type: 3}

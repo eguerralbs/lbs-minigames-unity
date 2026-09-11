@@ -25,6 +25,12 @@ namespace Lbs.MiniGames.Games.Memorama
             new(510f, 390f), new(960f, 390f), new(1410f, 390f),
             new(510f, 790f), new(960f, 790f), new(1410f, 790f)
         };
+        private static readonly string[] Level3AnimalIds = { "cat", "sheep", "rabbit", "dog", "cat", "sheep", "rabbit", "dog" };
+        private static readonly Vector2[] Level3CardCenters =
+        {
+            new(345f, 390f), new(735f, 390f), new(1125f, 390f), new(1515f, 390f),
+            new(345f, 790f), new(735f, 790f), new(1125f, 790f), new(1515f, 790f)
+        };
         private const float OpeningPreviewDuration = 0.5f;
         private const float OpeningFlipDuration = 0.32f;
         private const float CardFlipDuration = 0.32f;
@@ -45,20 +51,27 @@ namespace Lbs.MiniGames.Games.Memorama
         [SerializeField] private Sprite background;
         [SerializeField] private Sprite cardBack;
         [SerializeField] private Sprite level2Back;
+        [SerializeField] private Sprite level3Back;
         [SerializeField] private Sprite cardFront;
         [SerializeField] private Sprite cowFront;
         [SerializeField] private Sprite rabbitFront;
         [SerializeField] private Sprite dogFront;
         [SerializeField] private Sprite pigFront;
+        [SerializeField] private Sprite catFront;
+        [SerializeField] private Sprite sheepFront;
         [SerializeField] private Sprite cowArtwork;
         [SerializeField] private Sprite rabbitArtwork;
         [SerializeField] private Sprite dogArtwork;
         [SerializeField] private Sprite pigArtwork;
+        [SerializeField] private Sprite catArtwork;
+        [SerializeField] private Sprite sheepArtwork;
         [SerializeField] private Sprite exitIcon;
         [SerializeField] private AudioClip cowNameAudio;
         [SerializeField] private AudioClip rabbitNameAudio;
         [SerializeField] private AudioClip dogNameAudio;
         [SerializeField] private AudioClip pigNameAudio;
+        [SerializeField] private AudioClip catNameAudio;
+        [SerializeField] private AudioClip sheepNameAudio;
         [SerializeField] private AudioClip initialInstruction;
         [SerializeField] private AudioClip matchSuccessSfx;
         [SerializeField] private AudioClip[] compliments;
@@ -135,12 +148,12 @@ namespace Lbs.MiniGames.Games.Memorama
         private void BuildLevel(int levelIndex)
         {
             currentLevelIndex = levelIndex;
-            string[] animalIds = ShuffleAnimalIds(levelIndex == 0 ? Level1AnimalIds : Level2AnimalIds);
-            cardCenters = levelIndex == 0 ? Level1CardCenters : Level2CardCenters;
+            string[] animalIds = ShuffleAnimalIds(AnimalIdsForLevel(levelIndex));
+            cardCenters = CardCentersForLevel(levelIndex);
             board = new MemoramaBoard(animalIds);
             cardViews = new CardView[board.CardCount];
             cardFlipAnimations = new Coroutine[board.CardCount];
-            Sprite back = levelIndex == 0 ? cardBack : level2Back != null ? level2Back : cardBack;
+            Sprite back = BackForLevel(levelIndex);
 
             levelRoot = new GameObject($"Level{levelIndex + 1}Board", typeof(RectTransform)).GetComponent<RectTransform>();
             levelRoot.SetParent(boardRoot, false);
@@ -148,6 +161,27 @@ namespace Lbs.MiniGames.Games.Memorama
             for (int index = 0; index < cardViews.Length; index++) CreateCard(index, back);
             RefreshAllCards();
         }
+
+        private static string[] AnimalIdsForLevel(int levelIndex) => levelIndex switch
+        {
+            0 => Level1AnimalIds,
+            1 => Level2AnimalIds,
+            _ => Level3AnimalIds
+        };
+
+        private static Vector2[] CardCentersForLevel(int levelIndex) => levelIndex switch
+        {
+            0 => Level1CardCenters,
+            1 => Level2CardCenters,
+            _ => Level3CardCenters
+        };
+
+        private Sprite BackForLevel(int levelIndex) => levelIndex switch
+        {
+            0 => cardBack,
+            1 => level2Back != null ? level2Back : cardBack,
+            _ => level3Back != null ? level3Back : cardBack
+        };
 
         private static string[] ShuffleAnimalIds(string[] source)
         {
@@ -241,7 +275,7 @@ namespace Lbs.MiniGames.Games.Memorama
                 {
                     ShowCompletionParticles();
                     PlayCompletionComplimentAfterFinalName(NameAudioFor(board.GetAnimalId(index)));
-                    if (currentLevelIndex == 0) levelTransition = StartCoroutine(TransitionToNextLevel());
+                    if (currentLevelIndex < 2) levelTransition = StartCoroutine(TransitionToNextLevel());
                 }
             }
         }
@@ -533,7 +567,7 @@ namespace Lbs.MiniGames.Games.Memorama
 
             RectTransform outgoingLevel = levelRoot;
             openingCardsVisible = true;
-            BuildLevel(1);
+            BuildLevel(currentLevelIndex + 1);
             RectTransform incomingLevel = levelRoot;
             incomingLevel.anchoredPosition = new Vector2(ReferenceWidth, 0f);
             SetCardsInteractable(false);
@@ -602,6 +636,8 @@ namespace Lbs.MiniGames.Games.Memorama
             nameToastLabel.text = animalId switch
             {
                 "cow" => "Cow",
+                "cat" => "Cat",
+                "sheep" => "Sheep",
                 "rabbit" => "Rabbit",
                 "dog" => "Dog",
                 _ => "Pig"
@@ -630,6 +666,8 @@ namespace Lbs.MiniGames.Games.Memorama
         private Sprite AnimalFor(string animalId) => animalId switch
         {
             "cow" => cowArtwork,
+            "cat" => catArtwork,
+            "sheep" => sheepArtwork,
             "rabbit" => rabbitArtwork,
             "dog" => dogArtwork,
             _ => pigArtwork
@@ -638,6 +676,8 @@ namespace Lbs.MiniGames.Games.Memorama
         private Sprite FrontFor(string animalId) => animalId switch
         {
             "cow" => cowFront != null ? cowFront : cardFront,
+            "cat" => catFront != null ? catFront : cardFront,
+            "sheep" => sheepFront != null ? sheepFront : cardFront,
             "rabbit" => rabbitFront != null ? rabbitFront : cardFront,
             "dog" => dogFront != null ? dogFront : cardFront,
             _ => pigFront != null ? pigFront : cardFront
@@ -646,6 +686,8 @@ namespace Lbs.MiniGames.Games.Memorama
         private AudioClip NameAudioFor(string animalId) => animalId switch
         {
             "cow" => cowNameAudio,
+            "cat" => catNameAudio,
+            "sheep" => sheepNameAudio,
             "rabbit" => rabbitNameAudio,
             "dog" => dogNameAudio,
             _ => pigNameAudio
