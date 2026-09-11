@@ -4,6 +4,7 @@ using Lbs.MiniGames.Catalog;
 using Lbs.MiniGames.Games.Memorama;
 using Lbs.MiniGames.Navigation;
 using Lbs.MiniGames.Shared;
+using Lbs.MiniGames.Shared.Results;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -67,8 +68,8 @@ namespace Lbs.MiniGames.Tests
                     button.transition == Selectable.Transition.None && button.targetGraphic == null), Is.True);
                 Assert.That(cards.All(button => !button.interactable), Is.True);
                 Assert.That(cards.All(button => button.transform.Find("Animal").gameObject.activeSelf), Is.True);
-                Sprite stickerBlue = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/StickerBlue.png");
-                Sprite stickerPink = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/StickerPink.png");
+                Sprite stickerBlue = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/StickersPlacement/Art/StickerBlue.png");
+                Sprite stickerPink = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/StickersPlacement/Art/StickerPink.png");
                 Sprite[] fronts = cards.Select(button => button.transform.Find("Face").GetComponent<Image>().sprite).ToArray();
                 Assert.That(fronts.Count(front => front == stickerBlue), Is.EqualTo(2));
                 Assert.That(fronts.Count(front => front == stickerPink), Is.EqualTo(2));
@@ -81,14 +82,16 @@ namespace Lbs.MiniGames.Tests
                 RoundedSurface toastFill = fillTransform.GetComponent<RoundedSurface>();
                 RoundedSurface toastSurface = surfaceTransform.GetComponent<RoundedSurface>();
                 Text toastLabel = toast.GetComponentInChildren<Text>(true);
-                Font nunitoExtraBold = AssetDatabase.LoadAssetAtPath<Font>("Assets/App/Theme/Fonts/Nunito-ExtraBold.ttf");
+                Font volteRegular = AssetDatabase.LoadAssetAtPath<Font>("Assets/App/Theme/Fonts/Volte-Regular.otf");
                 Assert.That(toastSurface, Is.Not.Null);
                 Assert.That(toastFill, Is.Not.Null);
                 Assert.That(toastFill.color.a, Is.EqualTo(1f));
                 Assert.That(toastFill.OutlineThickness, Is.EqualTo(0f));
                 Assert.That(toastFill.CornerRadius, Is.EqualTo(toastSurface.CornerRadius));
                 Assert.That(toastSurface.color.a, Is.EqualTo(1f));
-                Assert.That(toastLabel.font, Is.SameAs(nunitoExtraBold));
+                Assert.That(toastLabel.font, Is.SameAs(volteRegular));
+                Assert.That(toastLabel.fontStyle, Is.EqualTo(FontStyle.Bold));
+                Assert.That(toastLabel.GetComponent<Outline>(), Is.Not.Null);
             }
             finally
             {
@@ -127,8 +130,22 @@ namespace Lbs.MiniGames.Tests
             Assert.That(successSfx, Is.Not.Null);
             Sprite fourStar = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/ShapeAnalogy/Celebration/4Star.png");
             Sprite fiveStar = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/ShapeAnalogy/Celebration/5star.png");
+            Sprite finalStar = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/ShapeAnalogy/FinalStar.png");
+            Sprite circleConfetti = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/ShapeAnalogy/Celebration/CircleConfetti.png");
+            Sprite rectangularConfetti = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/ShapeAnalogy/Celebration/RectangularConfetti.png");
+            Sprite serpentina = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/ShapeAnalogy/Celebration/Serpentina.png");
+            Sprite serpentina2 = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/ShapeAnalogy/Celebration/Serpentina2.png");
+            Sprite serpentina3 = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/ShapeAnalogy/Celebration/Serpentina3.png");
+            var celebrationConfiguration = AssetDatabase.LoadAssetAtPath<FinalCelebrationConfiguration>("Assets/App/Shared/Results/DefaultFinalCelebrationConfiguration.asset");
             Assert.That(fourStar, Is.Not.Null);
             Assert.That(fiveStar, Is.Not.Null);
+            Assert.That(finalStar, Is.Not.Null);
+            Assert.That(circleConfetti, Is.Not.Null);
+            Assert.That(rectangularConfetti, Is.Not.Null);
+            Assert.That(serpentina, Is.Not.Null);
+            Assert.That(serpentina2, Is.Not.Null);
+            Assert.That(serpentina3, Is.Not.Null);
+            Assert.That(celebrationConfiguration, Is.Not.Null);
 
             Scene scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
             try
@@ -164,10 +181,16 @@ namespace Lbs.MiniGames.Tests
                 Assert.That(serializedGame.FindProperty("initialInstruction").objectReferenceValue, Is.SameAs(initialInstruction));
                 Assert.That(serializedGame.FindProperty("matchSuccessSfx").objectReferenceValue, Is.SameAs(successSfx));
                 Assert.That(serializedGame.FindProperty("toastFont").objectReferenceValue,
-                    Is.SameAs(AssetDatabase.LoadAssetAtPath<Font>("Assets/App/Theme/Fonts/Nunito-ExtraBold.ttf")));
+                    Is.SameAs(AssetDatabase.LoadAssetAtPath<Font>("Assets/App/Theme/Fonts/Volte-Regular.otf")));
                 Assert.That(serializedGame.FindProperty("fourStarParticle").objectReferenceValue, Is.SameAs(fourStar));
                 Assert.That(serializedGame.FindProperty("fiveStarParticle").objectReferenceValue, Is.SameAs(fiveStar));
-                Assert.That(serializedGame.FindProperty("finalStar").objectReferenceValue, Is.SameAs(fiveStar));
+                Assert.That(serializedGame.FindProperty("finalStar").objectReferenceValue, Is.SameAs(finalStar));
+                Assert.That(serializedGame.FindProperty("circleConfetti").objectReferenceValue, Is.SameAs(circleConfetti));
+                Assert.That(serializedGame.FindProperty("rectangularConfetti").objectReferenceValue, Is.SameAs(rectangularConfetti));
+                Assert.That(serializedGame.FindProperty("serpentina").objectReferenceValue, Is.SameAs(serpentina));
+                Assert.That(serializedGame.FindProperty("serpentina2").objectReferenceValue, Is.SameAs(serpentina2));
+                Assert.That(serializedGame.FindProperty("serpentina3").objectReferenceValue, Is.SameAs(serpentina3));
+                Assert.That(serializedGame.FindProperty("celebrationConfiguration").objectReferenceValue, Is.SameAs(celebrationConfiguration));
                 Assert.That(serializedGame.FindProperty("scoreFont").objectReferenceValue, Is.Not.Null);
             }
             finally

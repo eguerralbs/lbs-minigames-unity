@@ -280,12 +280,17 @@ MonoBehaviour:
   initialInstruction: {fileID: 8300000, guid: 0f825b01c7a64152a1fdcb8a349d9168, type: 3}
   matchSuccessSfx: {fileID: 8300000, guid: 4c58360cd429fef47914a754ee1bea55, type: 3}
   font: {fileID: 12800000, guid: dbefde803f6e494eaa7003061af0e9cf, type: 3}
-  toastFont: {fileID: 12800000, guid: 1e5b7fa8d8db455fbf7488bfcc005457, type: 3}
+  toastFont: {fileID: 12800000, guid: dbefde803f6e494eaa7003061af0e9cf, type: 3}
   fourStarParticle: {fileID: 21300000, guid: 7aaa93add96570448ae05871b439e5cf, type: 3}
   fiveStarParticle: {fileID: 21300000, guid: 2368f1c0bdbc43842a0f38eb0cdc423e, type: 3}
-  finalStar: {fileID: 21300000, guid: 2368f1c0bdbc43842a0f38eb0cdc423e, type: 3}
-  scoreFont: {fileID: 12800000, guid: dbefde803f6e494eaa7003061af0e9cf, type: 3}
-  celebrationConfiguration: {fileID: 0}
+  finalStar: {fileID: 21300000, guid: 7a61097ca8858f14c9ace23f39811385, type: 3}
+  circleConfetti: {fileID: 21300000, guid: 45452d6d48c0eca47bb661bb00f6ded5, type: 3}
+  rectangularConfetti: {fileID: 21300000, guid: 26dd21f21b81e794096bb6c0e82d02c7, type: 3}
+  serpentina: {fileID: 21300000, guid: ad40c9d7f8c1a034aa703e2fffc02c03, type: 3}
+  serpentina2: {fileID: 21300000, guid: 0ed20a0a21944d86871ce62fb71fee94, type: 3}
+  serpentina3: {fileID: 21300000, guid: 150c83a7361f402191c5f4bea519dd3a, type: 3}
+  scoreFont: {fileID: 12800000, guid: 3f8bfbd63ebcfb941a68a6acec04b117, type: 3}
+  celebrationConfiguration: {fileID: 11400000, guid: 426fc08147e745098ff70ea1cd23b0f6, type: 2}
 --- !u!1 &3000
 GameObject:
   m_ObjectHideFlags: 0

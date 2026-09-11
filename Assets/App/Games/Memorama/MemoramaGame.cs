@@ -57,6 +57,8 @@ namespace Lbs.MiniGames.Games.Memorama
         private const string ComplimentsResourcePath = "ShapeAnalogy/Voice/Compliments/en";
         private const float CompletionVoiceWaitPadding = 0.5f;
         private const int ToastFontSize = 56;
+        private const FontStyle ToastFontStyle = FontStyle.Bold;
+        private const string ToastCharacters = "CowPigRabbitDogCatSheep";
         private const float ToastMinimumWidth = 200f;
         private const float ToastHorizontalPadding = 96f;
         private const float ToastHeight = 112f;
@@ -100,6 +102,11 @@ namespace Lbs.MiniGames.Games.Memorama
         [SerializeField] private Sprite fourStarParticle;
         [SerializeField] private Sprite fiveStarParticle;
         [SerializeField] private Sprite finalStar;
+        [SerializeField] private Sprite circleConfetti;
+        [SerializeField] private Sprite rectangularConfetti;
+        [SerializeField] private Sprite serpentina;
+        [SerializeField] private Sprite serpentina2;
+        [SerializeField] private Sprite serpentina3;
         [SerializeField] private Font scoreFont;
         [SerializeField] private FinalCelebrationConfiguration celebrationConfiguration;
 
@@ -252,12 +259,26 @@ namespace Lbs.MiniGames.Games.Memorama
             RoundedSurface surface = UiFactory.CreateRoundedSurface(toastRect, "Surface", Color.white, 34f, false);
             surface.OutlineThickness = 5f;
             UiFactory.Stretch(surface.rectTransform, 0f);
-            nameToastLabel = UiFactory.CreateText(toastRect, "Label", toastFont, ToastFontSize, TextAnchor.MiddleCenter, new Color(0.141f, 0.102f, 0.208f));
+            Color toastTextColor = new(0.141f, 0.102f, 0.208f);
+            Font toastDisplayFont = ResolveToastFont();
+            toastDisplayFont?.RequestCharactersInTexture(ToastCharacters, ToastFontSize, ToastFontStyle);
+            nameToastLabel = UiFactory.CreateText(toastRect, "Label", toastDisplayFont, ToastFontSize, TextAnchor.MiddleCenter, toastTextColor);
+            UiFactory.ApplySyntheticHeaderStroke(nameToastLabel, toastTextColor);
+            nameToastLabel.fontStyle = FontStyle.Bold;
             nameToastLabel.raycastTarget = false;
             nameToastLabel.resizeTextForBestFit = false;
             nameToastLabel.horizontalOverflow = HorizontalWrapMode.Overflow;
             UiFactory.Stretch(nameToastLabel.rectTransform, 18f);
             nameToast.SetActive(false);
+        }
+
+        private Font ResolveToastFont()
+        {
+            return toastFont != null
+                ? toastFont
+                : font != null
+                    ? font
+                    : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         }
 
         private void CreateCard(int index, Sprite back)
@@ -308,9 +329,12 @@ namespace Lbs.MiniGames.Games.Memorama
                 ShowAnimalName(board.GetAnimalId(index));
                 if (board.Phase == MemoramaPhase.Complete)
                 {
-                    ShowCompletionParticles();
                     PlayCompletionComplimentAfterFinalName(NameAudioFor(board.GetAnimalId(index)));
-                    if (currentLevelIndex < 3) levelTransition = StartCoroutine(TransitionToNextLevel());
+                    if (currentLevelIndex < 3)
+                    {
+                        ShowCompletionParticles();
+                        levelTransition = StartCoroutine(TransitionToNextLevel());
+                    }
                     else
                     {
                         SetCardsInteractable(false);
@@ -329,11 +353,11 @@ namespace Lbs.MiniGames.Games.Memorama
                 finalStar ? finalStar : fiveStarParticle,
                 fourStarParticle,
                 fiveStarParticle,
-                null,
-                null,
-                null,
-                null,
-                null);
+                circleConfetti,
+                rectangularConfetti,
+                serpentina,
+                serpentina2,
+                serpentina3);
             celebrationPresenter.ShowCelebration(boardRoot, input);
             yield return new WaitForSecondsRealtime(celebrationPresenter.PresentationDelay);
             celebrationPresenter.ShowFinal(input);
@@ -701,6 +725,7 @@ namespace Lbs.MiniGames.Games.Memorama
         private void ShowAnimalName(string animalId)
         {
             if (toastPlayback != null) StopCoroutine(toastPlayback);
+            nameToast.SetActive(true);
             nameToastLabel.text = animalId switch
             {
                 "cow" => "Cow",
@@ -710,7 +735,8 @@ namespace Lbs.MiniGames.Games.Memorama
                 "dog" => "Dog",
                 _ => "Pig"
             };
-            nameToast.SetActive(true);
+            nameToastLabel.font?.RequestCharactersInTexture(nameToastLabel.text, ToastFontSize, ToastFontStyle);
+            nameToastLabel.SetAllDirty();
             ResizeNameToast();
             toastPlayback = StartCoroutine(HideNameToast());
         }
