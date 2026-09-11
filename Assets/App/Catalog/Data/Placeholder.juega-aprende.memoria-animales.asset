@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Placeholder.juega-aprende.memoria-animales
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameDefinition
   gameId: juega-aprende.memoria-animales
-  visibleName: Memoria de animales
+  visibleName: Memory
   category: {fileID: 11400000, guid: 7402c3cde37344e38b42ae274515b6bb, type: 2}
-  thumbnail: {fileID: 21300000, guid: a9320ce35fe742569974efb0965c3225, type: 3}
+  thumbnail: {fileID: 21300000, guid: 5e2bfe22f6424869a17cde04b93384c2, type: 3}
   sceneName: Memorama
   description: Encuentra las parejas de animales.
   supportedDifficulties: []

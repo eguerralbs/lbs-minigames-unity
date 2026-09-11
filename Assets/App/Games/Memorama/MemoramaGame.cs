@@ -44,6 +44,7 @@ namespace Lbs.MiniGames.Games.Memorama
 
         [SerializeField] private Sprite background;
         [SerializeField] private Sprite cardBack;
+        [SerializeField] private Sprite level2Back;
         [SerializeField] private Sprite cardFront;
         [SerializeField] private Sprite cowFront;
         [SerializeField] private Sprite rabbitFront;
@@ -139,11 +140,12 @@ namespace Lbs.MiniGames.Games.Memorama
             board = new MemoramaBoard(animalIds);
             cardViews = new CardView[board.CardCount];
             cardFlipAnimations = new Coroutine[board.CardCount];
+            Sprite back = levelIndex == 0 ? cardBack : level2Back != null ? level2Back : cardBack;
 
             levelRoot = new GameObject($"Level{levelIndex + 1}Board", typeof(RectTransform)).GetComponent<RectTransform>();
             levelRoot.SetParent(boardRoot, false);
             UiFactory.Stretch(levelRoot, 0f);
-            for (int index = 0; index < cardViews.Length; index++) CreateCard(index);
+            for (int index = 0; index < cardViews.Length; index++) CreateCard(index, back);
             RefreshAllCards();
         }
 
@@ -189,7 +191,7 @@ namespace Lbs.MiniGames.Games.Memorama
             nameToast.SetActive(false);
         }
 
-        private void CreateCard(int index)
+        private void CreateCard(int index, Sprite back)
         {
             Button button = UiFactory.CreateButton(levelRoot, $"Card{index + 1}", font, string.Empty, Color.clear);
             RectTransform cardRect = button.GetComponent<RectTransform>();
@@ -211,7 +213,7 @@ namespace Lbs.MiniGames.Games.Memorama
             button.transition = Selectable.Transition.None;
             button.targetGraphic = null;
             button.onClick.AddListener(() => SelectCard(capturedIndex));
-            cardViews[index] = new CardView(button, cardRect, face, animal, FrontFor(animalId));
+            cardViews[index] = new CardView(button, cardRect, face, animal, FrontFor(animalId), back);
         }
 
         private void SelectCard(int index)
@@ -391,7 +393,7 @@ namespace Lbs.MiniGames.Games.Memorama
             RefreshCard(index);
         }
 
-        private void StopCardFlipAnimations()
+        private void StopCardFlipAnimations(bool restorePresentation = true)
         {
             for (int index = 0; index < cardFlipAnimations.Length; index++)
             {
@@ -399,6 +401,7 @@ namespace Lbs.MiniGames.Games.Memorama
                 cardFlipAnimations[index] = null;
             }
 
+            if (!restorePresentation) return;
             RestoreCardRotations();
             if (board != null) RefreshAllCards();
         }
@@ -412,7 +415,7 @@ namespace Lbs.MiniGames.Games.Memorama
 
         private void SetCardVisible(CardView view, bool visible)
         {
-            view.Face.sprite = visible ? view.Front : cardBack;
+            view.Face.sprite = visible ? view.Front : view.Back;
             view.Face.color = Color.white;
             view.Animal.gameObject.SetActive(visible);
         }
@@ -650,13 +653,13 @@ namespace Lbs.MiniGames.Games.Memorama
 
         private void ReturnToLobby()
         {
+            if (boardRoot != null) boardRoot.gameObject.SetActive(false);
             StopLevelTransition();
             StopMismatchResolution();
-            StopCardFlipAnimations();
+            StopCardFlipAnimations(false);
             StopOpeningSequence();
             ClearCompletionParticles();
             StopCompletionComplimentPlayback();
-            RestoreCardTransforms();
             audio?.StopVoice();
             services?.GameLauncher.ShowLobby();
         }
@@ -665,11 +668,10 @@ namespace Lbs.MiniGames.Games.Memorama
         {
             StopLevelTransition();
             StopMismatchResolution();
-            StopCardFlipAnimations();
+            StopCardFlipAnimations(false);
             StopOpeningSequence();
             ClearCompletionParticles();
             StopCompletionComplimentPlayback();
-            RestoreCardTransforms();
             if (toastPlayback != null) StopCoroutine(toastPlayback);
             toastPlayback = null;
             audio?.StopVoice();
@@ -685,13 +687,14 @@ namespace Lbs.MiniGames.Games.Memorama
 
         private sealed class CardView
         {
-            public CardView(Button button, RectTransform rect, Image face, Image animal, Sprite front)
+            public CardView(Button button, RectTransform rect, Image face, Image animal, Sprite front, Sprite back)
             {
                 Button = button;
                 Rect = rect;
                 Face = face;
                 Animal = animal;
                 Front = front;
+                Back = back;
             }
 
             public Button Button { get; }
@@ -699,6 +702,7 @@ namespace Lbs.MiniGames.Games.Memorama
             public Image Face { get; }
             public Image Animal { get; }
             public Sprite Front { get; }
+            public Sprite Back { get; }
         }
     }
 }

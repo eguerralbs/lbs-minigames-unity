@@ -100,6 +100,7 @@ namespace Lbs.MiniGames.Tests
         public void SuppliedArtworkAndAudioAssetsAreImportedAndAssigned()
         {
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level1Back.png"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level2Back.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Level1Front.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Cow.png"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/Games/Memorama/Art/Rabbit.png"), Is.Not.Null);
@@ -125,6 +126,7 @@ namespace Lbs.MiniGames.Tests
                     .SelectMany(root => root.GetComponentsInChildren<MemoramaGame>(true))
                     .Single();
                 var serializedGame = new SerializedObject(game);
+                Assert.That(serializedGame.FindProperty("level2Back").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("cowArtwork").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("cowNameAudio").objectReferenceValue, Is.Not.Null);
                 Assert.That(serializedGame.FindProperty("rabbitNameAudio").objectReferenceValue, Is.Not.Null);
