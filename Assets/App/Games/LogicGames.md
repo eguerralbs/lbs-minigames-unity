@@ -26,11 +26,22 @@ This sequence delivers twenty-five short logic activities in a fixed order for t
 | 18 | Triangles Count | `triangles.count` | Count the triangles in the illustration. | Thinking Figures (`thinking.figures`) |
 | 19 | Thinking Figures | `thinking.figures` | Solve a visual figure-reasoning task. | Squares Succession (`squares.succession`) |
 | 20 | Squares Succession | `squares.succession` | Complete a sequence of squares. | Fraction Succession (`fraction.succession`) |
-| 21 | Fraction Succession | `fraction.succession` | Complete a fraction sequence. | Shortest Route Logic (`shortest.route`) |
-| 22 | Logic | `shortest.route` | Identify the character with the shortest route. | Apple Math (`apple.math`) |
-| 23 | Math | `apple.math` | Discover the value of one apple cube. | Shape-Put Logic (`shape.put`) |
-| 24 | Logic | `shape.put` | Identify the third shape in the displayed sequence. | Age Compare Math (`age.compare`) |
-| 25 | Math | `age.compare` | Listen and choose the asked age. | Lobby after the final result interaction |
+| 21 | Fraction Succession | `fraction.succession` | Complete a fraction sequence. | Shortest Route (`shortest.route`) |
+| 22 | Shortest Route | `shortest.route` | Identify the character with the shortest route. | Apple Math (`apple.math`) |
+| 23 | Apple Math | `apple.math` | Discover the value of one apple cube. | Shape-Put (`shape.put`) |
+| 24 | Shape-Put | `shape.put` | Identify the third shape in the displayed sequence. | Age Compare (`age.compare`) |
+| 25 | Age Compare | `age.compare` | Listen and choose the asked age. | Lobby after the final result interaction |
+
+The Hub may display a catalog `hubSubjectLabel`, such as `Logic` or `Math`, for logic cards. The Game column above remains the authoritative game/scene name.
+
+## Standalone playable games
+
+These catalog entries are playable but are outside the fixed sequence:
+
+| Game | ID | Notes |
+|---|---|---|
+| Number Pull | `math.number-pull` | Launches from its catalog card. |
+| Memorama | `juega-aprende.memoria-animales` | Launches from its catalog card. |
 
 ## Shared behavior
 
@@ -46,6 +57,14 @@ This sequence delivers twenty-five short logic activities in a fixed order for t
 - [ ] Ensure the terminal game uses the final-result interaction to return to the Lobby; every non-terminal game must advance to its explicit successor.
 - [ ] Configure the scene's `FinalCelebrationConfiguration` reference (shared default: `Assets/App/Shared/Results/DefaultFinalCelebrationConfiguration.asset`).
 - [ ] Update this sequence table and its transition descriptions.
+
+## Catalog, build, and verification wiring
+
+- `Assets/App/Catalog/Data/MiniGameCatalog.asset` is the catalog source of truth. Add each playable or preview definition there and set its visibility deliberately.
+- `ProjectSettings/EditorBuildSettings.asset` must enable every launchable game scene, alongside `Bootstrap` and `Lobby`.
+- `Assets/App/Navigation/LevelSequenceRoute.cs` owns fixed-route order, successors, and logic-sequence BGM membership.
+- Standalone games need catalog and Build Settings wiring, but do not need a route, successor, or logic-sequence BGM entry.
+- Verify focused EditMode coverage and a representative Bootstrap → Lobby → game → Lobby flow when runtime verification is available.
 
 ## References
 

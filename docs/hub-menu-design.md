@@ -68,7 +68,11 @@ MainArea
 - **Non-interaction rule:** Wolfie is a decorative `Image` with raycasts disabled. The mascot and approved static welcome bubble have no Button, EventTrigger, collider, dialogue interaction, animation, effects, or mascot behavior.
 - **Future extensibility:** `MascotArea` is intentionally a sibling of `GamesArea`, so later approved speech, effects, or interaction can be added without restructuring the game gallery. Interactive dialogue, effects, and animation remain deferred.
 
-The `LobbyController` Inspector exposes the following approved layout fields: `mascotSprite`, `mascotAreaWidthFraction` (0.20–0.30), and `mascotBottomRightInset` (reference-pixel bottom-right inset). These fields tune only mascot presentation; they do not change the gallery, card activation, or navigation behavior.
+The current `LobbyController` Inspector serializes `mascotSprite`, `backgroundDecorations`, `backgroundDecorOpacity`, `backgroundDecorBaseSpeed`, and `cardTitleFont`. The design-target fields `mascotAreaWidthFraction` (0.20–0.30) and `mascotBottomRightInset` (reference-pixel bottom-right inset) are not currently serialized. Those target fields would tune only mascot presentation; they would not change gallery, card activation, or navigation behavior.
+
+### Runtime implementation note
+
+The current branch visibly implements a Wolfie avatar/profile-style capsule, a presentation-only difficulty selector, vertical category sections with horizontal card rows, rotating background decorations, and `Coming soon`/`Opening...` cues. These are implementation facts for review, not an automatic amendment of this approved design. The product/design decision remains whether to promote them into the approved direction or align the implementation in a follow-up.
 
 ## Game-card anatomy
 
