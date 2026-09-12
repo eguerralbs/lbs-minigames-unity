@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Lbs.MiniGames.Bootstrap;
 using Lbs.MiniGames.Catalog;
+using Lbs.MiniGames.Games.ColoringSheet;
 using Lbs.MiniGames.Navigation;
 using Lbs.MiniGames.Shared;
 using UnityEngine;
@@ -144,6 +145,7 @@ namespace Lbs.MiniGames.Lobby
         // Background decoration layer: each item rotates slowly on its own axis so the
         // scene feels alive without ever drawing attention away from the cards.
         private readonly List<BackgroundDecorView> backgroundDecor = new();
+        private readonly List<UnityEngine.Object> ownedPreviewResources = new();
 
         private sealed class BackgroundDecorView
         {
@@ -225,6 +227,12 @@ namespace Lbs.MiniGames.Lobby
             {
                 Destroy(difficultySheet);
             }
+
+            foreach (UnityEngine.Object resource in ownedPreviewResources)
+            {
+                if (resource != null) Destroy(resource);
+            }
+            ownedPreviewResources.Clear();
         }
 
         private void BuildInterface()
@@ -1065,7 +1073,7 @@ namespace Lbs.MiniGames.Lobby
             feedback.SelectionRequested += card => RequestLaunch(game, card);
         }
 
-        private static void CreateCardArtwork(RectTransform cardTransform, GameDefinition game, bool useCoverThumbnail)
+        private void CreateCardArtwork(RectTransform cardTransform, GameDefinition game, bool useCoverThumbnail)
         {
             RoundedSurface artBackground = UiFactory.CreateRoundedSurface(cardTransform, "Artwork", PalePurple, 30f, false);
             // Edge-to-edge art (no inner padding) like LogicLike — the artwork fills the card
@@ -1074,10 +1082,11 @@ namespace Lbs.MiniGames.Lobby
             Mask artworkMask = artBackground.gameObject.AddComponent<Mask>();
             artworkMask.showMaskGraphic = false;
 
-            if (game.Thumbnail != null)
+            Sprite thumbnailSprite = ResolveCardThumbnail(game);
+            if (thumbnailSprite != null)
             {
                 Image thumbnail = UiFactory.CreateImage(artBackground.rectTransform, "Thumbnail", Color.white);
-                thumbnail.sprite = game.Thumbnail;
+                thumbnail.sprite = thumbnailSprite;
                 thumbnail.raycastTarget = false;
                 if (useCoverThumbnail)
                 {
@@ -1102,6 +1111,22 @@ namespace Lbs.MiniGames.Lobby
 
             RoundedSurface softNode = UiFactory.CreateRoundedSurface(artBackground.rectTransform, "SoftNode", SoftPurple, 999f, false);
             UiFactory.Anchor(softNode.rectTransform, new Vector2(0.66f, 0.17f), new Vector2(0.86f, 0.46f));
+        }
+
+        private Sprite ResolveCardThumbnail(GameDefinition game)
+        {
+            if (game != null && game.GameId == ColoringSheetGame.StableGameId)
+            {
+                ColoringSheetProgressStore store = new(ColoringSheetGame.StableGameId, ColoringSheetGame.ProgressSourceId, ColoringSheetGame.ProgressWidth, ColoringSheetGame.ProgressHeight);
+                if (store.TryCreatePreviewSprite(out Sprite preview))
+                {
+                    ownedPreviewResources.Add(preview.texture);
+                    ownedPreviewResources.Add(preview);
+                    return preview;
+                }
+            }
+
+            return game != null ? game.Thumbnail : null;
         }
 
         private static void ConfigureCoverThumbnail(Image thumbnail)
