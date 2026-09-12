@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameDefinition
   gameId: circle.math
   visibleName: Circle Math
+  hubSubjectLabel: Math
   category: {fileID: 11400000, guid: 883620bcff84447a797cc002b7934e11, type: 2}
   thumbnail: {fileID: 21300000, guid: 962e84c2a94fda6418c558cfc7429ebc, type: 3}
   sceneName: CircleMath

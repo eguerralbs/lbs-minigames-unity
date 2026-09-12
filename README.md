@@ -1,6 +1,6 @@
 # LBS Mini Games
 
-A catalog-driven Unity application containing **22 playable educational mini-games** across logic, mathematics, science, and language-oriented content. The Hub also contains seven visible preview cards for games that are not playable yet. The application starts at `Bootstrap`, builds the shared services, loads the `Lobby`, and launches each game from its catalog definition.
+A catalog-driven Unity application containing **27 playable catalog entries** across logic, mathematics, science, and language-oriented content: 25 games in the fixed logic sequence plus standalone `Number Pull` (`math.number-pull`) and `Memorama` (`juega-aprende.memoria-animales`). The Hub also shows 15 non-playable preview placeholders, for 42 visible cards in the current catalog. `MiniGameCatalog` is the source of truth; do not hand-maintain these snapshot counts after future catalog additions. The application starts at `Bootstrap`, builds the shared services, loads the `Lobby`, and launches each game from its catalog definition.
 
 ## Prerequisites
 
@@ -35,19 +35,21 @@ In Unity Hub, select **Add** and choose the cloned project directory. Open it wi
 
 `Bootstrap` is the entry scene. `Lobby` and every launchable game scene are enabled in Build Settings. Start the application from `Bootstrap`; opening a downstream scene directly bypasses bootstrap service configuration.
 
-### Logic sequence
+### Hub and logic sequence
 
-The main progression is:
+The Hub builds catalog-driven category sections in a vertically scrollable page, with a horizontal card row in each section. Cards are either playable or display `Coming soon`. The difficulty selector is presentation-only: it currently does not filter cards or change the launched difficulty. The header includes Wolfie and decorative background presentation.
+
+The fixed logic route is:
 
 ```text
-Shape Analogy → Clothes Selection → Object Selection → Make An Emoji Drag → Animal Drag
-→ Triangles Count → Cube Platform → Candies Logic → Squares Succession → Kitchen Math Logic
-→ Funny Face Drag → Chemistry Selection → Triangles Shape Logic → Thinking 3D → Circle Math
-→ Bubble Math → LadyBug Place → Fraction Succession → Thinking Figures → Stickers Placement
-→ Wolfie Flasks
+Funny Face Drag → Shape Analogy → Wolfie Flasks → Thinking 3D → Animal Drag
+→ Kitchen Math Logic → Triangles Shape Logic → Circle Math → Cube Platform → Chemistry Selection
+→ Candies Logic → Clothes Selection → Make An Emoji Drag → Ladybug Place → Stickers Placement
+→ Object Selection → Bubble Math → Triangles Count → Thinking Figures → Squares Succession
+→ Fraction Succession → Shortest Route → Apple Math → Shape-Put → Age Compare
 ```
 
-The sequence advances after each successful celebration and ends at **Wolfie Flasks**. `Number Pull` is a separate playable catalog entry.
+The sequence advances after each successful celebration. **Age Compare** returns to the Lobby after its final result interaction. `Number Pull` and `Memorama` are standalone playable catalog entries and are not part of this fixed route.
 
 ## Test on an Android tablet
 
@@ -58,6 +60,10 @@ The sequence advances after each successful celebration and ends at **Wolfie Fla
 5. Follow the editor flow above and verify both landscape directions.
 
 The application is configured for auto-rotation with **Landscape Left** and **Landscape Right** enabled; both portrait orientations are disabled. UI canvases use a 1920×1080 reference resolution.
+
+### Optional Android batch build
+
+`AutoAndroidBuild.Build` is an optional editor helper that builds all enabled scenes to `build/lbs-minigames-logic.apk`. It checks the entry and representative scenes before building. This helper does not constitute device validation.
 
 ## Test and verification
 

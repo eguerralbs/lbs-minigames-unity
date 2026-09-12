@@ -72,9 +72,27 @@ EditorBuildSettings:
     path: Assets/App/Games/WolfieFlasks/WolfieFlasks.unity
     guid: d0da7df5b4b1457a9b8ffa0cbcc6e148
   - enabled: 1
+    path: Assets/App/Games/ShortestRoute/ShortestRoute.unity
+    guid: ce88a7eeb5d337e478855577bf9feb3c
+  - enabled: 1
+    path: Assets/App/Games/AppleMath/AppleMath.unity
+    guid: f0a3e5c7d9b04d1e8a2c5e7f9b1d3f40
+  - enabled: 1
+    path: Assets/App/Games/ShapePut/ShapePut.unity
+    guid: 082cadc0cb8d40239d1bbadb6b83d644
+  - enabled: 1
+    path: Assets/App/Games/AgeCompare/AgeCompare.unity
+    guid: 5b2da6cc49ac4403b0c755c421b15616
+  - enabled: 1
     path: Assets/App/Games/Thinking3D/Thinking3D.unity
     guid: 506bcbeab4eda5a4fa7d31347948f1d8
   - enabled: 1
     path: Assets/App/Games/CircleMath/CircleMath.unity
     guid: 121e9ee38787c8c45a9ba7d0599353c2
+  - enabled: 1
+    path: Assets/App/Games/Memorama/Memorama.unity
+    guid: 705fdd0ca08d45fcbbaee6b00e2496ba
+  - enabled: 1
+    path: Assets/App/Games/ColoringSheet/ColoringSheet.unity
+    guid: b38d6a364b3643fea9b612ac31b450ef
   m_configObjects: {}

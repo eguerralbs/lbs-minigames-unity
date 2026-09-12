@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Lbs.MiniGames.Bootstrap;
 using Lbs.MiniGames.Catalog;
+using Lbs.MiniGames.Games.ColoringSheet;
 using Lbs.MiniGames.Navigation;
 using Lbs.MiniGames.Shared;
 using UnityEngine;
@@ -34,7 +35,7 @@ namespace Lbs.MiniGames.Lobby
         }
 
         private static readonly Color Purple = new(0.580f, 0.282f, 0.957f);
-        private static readonly Color HeaderOverlay = new(0f, 0f, 0f, 0.38f);
+        private static readonly Color HeaderOverlay = new(0f, 0f, 0f, 0.30f);
         private static readonly Color Orange = new(1f, 0.718f, 0.251f);
         private static readonly Color DarkInk = new(0.141f, 0.102f, 0.208f);
         private static readonly Color ProfileCapsulePurple = new(0f, 0f, 0f, 0.40f);
@@ -48,6 +49,7 @@ namespace Lbs.MiniGames.Lobby
         private static readonly Color SoftPurple = new(0.780f, 0.643f, 0.980f);
 
         private const float OpeningDelaySeconds = 0.16f;
+        private const float PlaceholderFeedbackDelaySeconds = 1f;
         // Reference-canvas values: 316x84 becomes 225x60 px at 1366x768.
         private const float ProfileCapsuleWidth = 316f;
         private const float ProfileCapsuleHeight = 84f;
@@ -61,7 +63,7 @@ namespace Lbs.MiniGames.Lobby
         // Reference-canvas value: 422 px renders at ~300 px wide at 1366x768,
         // a 12% reduction from the previous 480 px / ~342 px pill.
         private const float DifficultyPillWidth = 422f;
-        private const float DifficultyPillHeight = 60f;
+        private const float DifficultyPillHeight = 84f;
         private const float DifficultySheetHeight = 620f;
         private const float DifficultySheetVisibleY = -64f;
         private const float DifficultySheetHiddenY = -684f;
@@ -72,7 +74,7 @@ namespace Lbs.MiniGames.Lobby
         private const float DifficultyOptionGap = 20f;
         private const float DifficultyOptionsTopInset = 144f;
         private const float DifficultyOptionBorderThickness = 4f;
-        private const string DifficultySheetTitleText = "Seleccione el nivel de dificultad";
+        private const string DifficultySheetTitleText = "Select a difficulty level";
         private static readonly Color DifficultyOptionSurface = White;
 
         // Scroll content / section layout (reference 1920x1080).
@@ -143,6 +145,7 @@ namespace Lbs.MiniGames.Lobby
         // Background decoration layer: each item rotates slowly on its own axis so the
         // scene feels alive without ever drawing attention away from the cards.
         private readonly List<BackgroundDecorView> backgroundDecor = new();
+        private readonly List<UnityEngine.Object> ownedPreviewResources = new();
 
         private sealed class BackgroundDecorView
         {
@@ -224,6 +227,12 @@ namespace Lbs.MiniGames.Lobby
             {
                 Destroy(difficultySheet);
             }
+
+            foreach (UnityEngine.Object resource in ownedPreviewResources)
+            {
+                if (resource != null) Destroy(resource);
+            }
+            ownedPreviewResources.Clear();
         }
 
         private void BuildInterface()
@@ -412,7 +421,7 @@ namespace Lbs.MiniGames.Lobby
 
             Font profileRangeFont = cardTitleFont != null ? cardTitleFont : font;
             Text profileRange = UiFactory.CreateText(textBounds, "ProfileRange", profileRangeFont, 26, TextAnchor.MiddleLeft, White);
-            profileRange.text = "Primaria baja";
+            profileRange.text = "Lower Primary";
             profileRange.fontStyle = FontStyle.Normal;
             profileRange.resizeTextForBestFit = false;
             profileRange.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -488,7 +497,7 @@ namespace Lbs.MiniGames.Lobby
             pillButton.targetGraphic = pill;
 
             Text pillLabel = UiFactory.CreateText(pill.rectTransform, "Label", font, 28, TextAnchor.MiddleCenter, DarkInk);
-            pillLabel.text = "Dificultad: " + DifficultyLabel(currentDifficulty);
+            pillLabel.text = "Difficulty: " + DifficultyLabel(currentDifficulty);
             pillLabel.raycastTarget = false;
             pillLabel.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             UiFactory.Stretch(pillLabel.rectTransform, 8f);
@@ -615,11 +624,11 @@ namespace Lbs.MiniGames.Lobby
             switch (level)
             {
                 case DifficultyLevel.PrimariaAlta:
-                    return "Primaria Alta";
+                    return "Upper Primary";
                 case DifficultyLevel.Secundaria:
-                    return "Secundaria";
+                    return "Secondary";
                 default:
-                    return "Primaria Baja";
+                    return "Lower Primary";
             }
         }
 
@@ -786,7 +795,7 @@ namespace Lbs.MiniGames.Lobby
         {
             if (difficultyLabel != null)
             {
-                difficultyLabel.text = "Dificultad: " + DifficultyLabel(currentDifficulty);
+                difficultyLabel.text = "Difficulty: " + DifficultyLabel(currentDifficulty);
             }
 
             for (int index = 0; index < difficultyOptions.Count; index++)
@@ -923,7 +932,13 @@ namespace Lbs.MiniGames.Lobby
                 for (int index = 0; index < count; index++)
                 {
                     float x = contentLeft + (index * (tileWidth + TileHorizontalGap));
-                    CreateGameCard(games[index], row, new Vector2(x, 0f), new Vector2(tileWidth, tileHeight));
+                    CreateGameCard(
+                        games[index],
+                        category.CategoryId == "logica",
+                        category.CategoryId == "imagine-and-play",
+                        row,
+                        new Vector2(x, 0f),
+                        new Vector2(tileWidth, tileHeight));
                 }
             }
 
@@ -995,13 +1010,19 @@ namespace Lbs.MiniGames.Lobby
             rect.sizeDelta = new Vector2(width, height);
 
             Text label = UiFactory.CreateText(rect, "Label", font, 34, TextAnchor.MiddleCenter, DarkInk);
-            label.text = "Próximamente";
+            label.text = "Coming soon";
             label.resizeTextForBestFit = false;
             label.raycastTarget = false;
             UiFactory.Stretch(label.rectTransform, 8f);
         }
 
-        private void CreateGameCard(GameDefinition game, RectTransform parent, Vector2 position, Vector2 size)
+        private void CreateGameCard(
+            GameDefinition game,
+            bool showSubjectLabel,
+            bool useCoverThumbnail,
+            RectTransform parent,
+            Vector2 position,
+            Vector2 size)
         {
             // Solid drop shadow behind the card, offset down a few reference pixels.
             // Created BEFORE the outline so it renders underneath (last sibling wins).
@@ -1020,10 +1041,10 @@ namespace Lbs.MiniGames.Lobby
             cardTransform.anchoredPosition = position;
             cardTransform.sizeDelta = size;
 
-            CreateCardArtwork(cardTransform, game);
+            CreateCardArtwork(cardTransform, game, useCoverThumbnail);
 
             Text title = UiFactory.CreateText(cardTransform, "Title", ResolveCardTitleFont(), 34, TextAnchor.MiddleCenter, CardTitleInk);
-            title.text = game.VisibleName;
+            title.text = showSubjectLabel ? game.HubSubjectLabel : game.VisibleName;
             // Card titles use the dedicated lighter weight (Nunito-Medium ~500) so cards read
             // calmer than the Black section headers. The single same-color stroke adds a hint of
             // weight, nudging the Medium toward a semibold feel. Best Fit stays off (moves with
@@ -1033,10 +1054,14 @@ namespace Lbs.MiniGames.Lobby
             title.raycastTarget = false;
             UiFactory.Anchor(title.rectTransform, new Vector2(0.04f, 0.02f), new Vector2(0.96f, 0.24f));
 
+            bool isPlaceholder = string.IsNullOrWhiteSpace(game.SceneName);
             RoundedSurface openingCue = UiFactory.CreateRoundedSurface(cardTransform, "OpeningCue", Orange, 20f, false);
-            UiFactory.Anchor(openingCue.rectTransform, new Vector2(0.40f, 0.42f), new Vector2(0.60f, 0.58f));
+            UiFactory.Anchor(
+                openingCue.rectTransform,
+                isPlaceholder ? new Vector2(0.24f, 0.42f) : new Vector2(0.40f, 0.42f),
+                isPlaceholder ? new Vector2(0.76f, 0.58f) : new Vector2(0.60f, 0.58f));
             Text openingLabel = UiFactory.CreateText(openingCue.rectTransform, "Label", ResolveCardTitleFont(), 22, TextAnchor.MiddleCenter, DarkInk);
-            openingLabel.text = "Abriendo...";
+            openingLabel.text = isPlaceholder ? "Coming soon" : "Opening...";
             openingLabel.resizeTextForBestFit = false;
             openingLabel.raycastTarget = false;
             UiFactory.Stretch(openingLabel.rectTransform, 4f);
@@ -1048,7 +1073,7 @@ namespace Lbs.MiniGames.Lobby
             feedback.SelectionRequested += card => RequestLaunch(game, card);
         }
 
-        private void CreateCardArtwork(RectTransform cardTransform, GameDefinition game)
+        private void CreateCardArtwork(RectTransform cardTransform, GameDefinition game, bool useCoverThumbnail)
         {
             RoundedSurface artBackground = UiFactory.CreateRoundedSurface(cardTransform, "Artwork", PalePurple, 30f, false);
             // Edge-to-edge art (no inner padding) like LogicLike — the artwork fills the card
@@ -1057,18 +1082,23 @@ namespace Lbs.MiniGames.Lobby
             Mask artworkMask = artBackground.gameObject.AddComponent<Mask>();
             artworkMask.showMaskGraphic = false;
 
-            if (game.Thumbnail != null)
+            Sprite thumbnailSprite = ResolveCardThumbnail(game);
+            if (thumbnailSprite != null)
             {
                 Image thumbnail = UiFactory.CreateImage(artBackground.rectTransform, "Thumbnail", Color.white);
-                thumbnail.sprite = game.Thumbnail;
+                thumbnail.sprite = thumbnailSprite;
                 thumbnail.raycastTarget = false;
-                // preserveAspect (same pattern the game cards use) scales the sprite to fit the
-                // artwork area without cropping or stretching, and centers it automatically.
-                // The previous EnvelopeParent + AspectRatioFitter cropped wide illustrations and,
-                // when re-anchored, left the letterboxed image pinned to one side instead of
-                // centered. preserveAspect alone avoids both problems.
-                thumbnail.preserveAspect = true;
-                UiFactory.Stretch(thumbnail.rectTransform, 0f);
+                if (useCoverThumbnail)
+                {
+                    ConfigureCoverThumbnail(thumbnail);
+                }
+                else
+                {
+                    // Preserve the existing contain behavior for all other categories.
+                    thumbnail.preserveAspect = true;
+                    UiFactory.Stretch(thumbnail.rectTransform, 0f);
+                }
+
                 return;
             }
 
@@ -1083,9 +1113,53 @@ namespace Lbs.MiniGames.Lobby
             UiFactory.Anchor(softNode.rectTransform, new Vector2(0.66f, 0.17f), new Vector2(0.86f, 0.46f));
         }
 
+        private Sprite ResolveCardThumbnail(GameDefinition game)
+        {
+            if (game != null && game.GameId == ColoringSheetGame.StableGameId)
+            {
+                ColoringSheetProgressStore store = new(ColoringSheetGame.StableGameId, ColoringSheetGame.ProgressSourceId, ColoringSheetGame.ProgressWidth, ColoringSheetGame.ProgressHeight);
+                if (store.TryCreatePreviewSprite(out Sprite preview))
+                {
+                    ownedPreviewResources.Add(preview.texture);
+                    ownedPreviewResources.Add(preview);
+                    return preview;
+                }
+            }
+
+            return game != null ? game.Thumbnail : null;
+        }
+
+        private static void ConfigureCoverThumbnail(Image thumbnail)
+        {
+            RectTransform rectTransform = thumbnail.rectTransform;
+            thumbnail.preserveAspect = true;
+            rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.anchoredPosition = Vector2.zero;
+
+            // EnvelopeParent expands the image until it covers the masked artwork area while
+            // preserving its aspect ratio. The centered pivot makes any overflow crop evenly.
+            AspectRatioFitter fitter = thumbnail.gameObject.AddComponent<AspectRatioFitter>();
+            fitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+            fitter.aspectRatio = thumbnail.sprite.rect.width / thumbnail.sprite.rect.height;
+        }
+
         private void RequestLaunch(GameDefinition game, GameCardFeedback card)
         {
-            if (launchInProgress || game == null || !game.IsValid())
+            if (game == null || launchInProgress)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(game.SceneName))
+            {
+                card.MarkOpening();
+                StartCoroutine(ResetPlaceholderFeedback(card));
+                return;
+            }
+
+            if (!game.IsValid())
             {
                 return;
             }
@@ -1093,6 +1167,12 @@ namespace Lbs.MiniGames.Lobby
             launchInProgress = true;
             card.MarkOpening();
             StartCoroutine(LaunchAfterFeedback(game, card));
+        }
+
+        private IEnumerator ResetPlaceholderFeedback(GameCardFeedback card)
+        {
+            yield return new WaitForSecondsRealtime(PlaceholderFeedbackDelaySeconds);
+            card?.ResetOpening();
         }
 
         private IEnumerator LaunchAfterFeedback(GameDefinition game, GameCardFeedback card)

@@ -8,6 +8,7 @@ namespace Lbs.MiniGames.Catalog
     {
         [SerializeField] private string gameId;
         [SerializeField] private string visibleName;
+        [SerializeField] private string hubSubjectLabel;
         [SerializeField] private GameCategory category;
         [SerializeField] private Sprite thumbnail;
         [SerializeField] private string sceneName;
@@ -20,6 +21,7 @@ namespace Lbs.MiniGames.Catalog
 
         public string GameId => gameId;
         public string VisibleName => visibleName;
+        public string HubSubjectLabel => hubSubjectLabel;
         public GameCategory Category => category;
         public Sprite Thumbnail => thumbnail;
         public string SceneName => sceneName;

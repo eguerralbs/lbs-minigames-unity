@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameDefinition
   gameId: shape.analogy
   visibleName: "Analog\xEDa de formas"
+  hubSubjectLabel: Logic
   category: {fileID: 11400000, guid: 883620bcff84447a797cc002b7934e11, type: 2}
-  thumbnail: {fileID: 21300000, guid: 7a61097ca8858f14c9ace23f39811385, type: 3}
+  thumbnail: {fileID: 21300000, guid: aa57deb0840c4f5c8489ac163a36532b, type: 3}
   sceneName: ShapeAnalogy
   description: "Mira la relaci\xF3n y arrastra la carta correcta al espacio vac\xEDo."
   supportedDifficulties:

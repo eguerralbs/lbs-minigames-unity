@@ -6,7 +6,7 @@ namespace Lbs.MiniGames.Shared.Audio
     /// Persistent audio boundary. Lives on ApplicationBootstrap's DontDestroyOnLoad object.
     /// Owns three dedicated AudioSources (Music, Voice, SFX) with explicit lifecycle.
     /// Music survives scene transitions and is not restarted for the same clip.
-    /// Voice ducks music and interrupts previous voice. SFX uses PlayOneShot.
+    /// Voice ducks music and interrupts previous voice; voice one-shots overlap. SFX uses PlayOneShot.
     /// </summary>
     public sealed class AppAudioService : MonoBehaviour, IAppAudioService
     {
@@ -20,9 +20,11 @@ namespace Lbs.MiniGames.Shared.Audio
         private bool isPaused;
         private bool isVoiceDucking;
         private bool isApplicationPaused;
+        private bool hasApplicationFocus = true;
         private Coroutine musicPlayback;
         private Coroutine voicePlayback;
         private AudioClip pendingVoiceClip;
+        private readonly System.Collections.Generic.List<PendingVoiceOneShot> pendingVoiceOneShots = new();
 
         public void Initialize(AppAudioConfig audioConfig)
         {
@@ -153,6 +155,7 @@ namespace Lbs.MiniGames.Shared.Audio
             if (clip == null) return;
             EnsureSources();
             CancelPendingVoicePlayback();
+            CancelPendingVoiceOneShots();
             if (clip.loadState == AudioDataLoadState.Loading)
             {
                 // Schedule playback when ready without restarting music.
@@ -169,6 +172,48 @@ namespace Lbs.MiniGames.Shared.Audio
                 voiceSource.Play();
                 ApplyVoiceDuck(true);
             }
+        }
+
+        public void PlayVoiceOneShot(AudioClip clip, float volume = 1f)
+        {
+            if (clip == null || isPaused || isApplicationPaused || !hasApplicationFocus) return;
+            EnsureSources();
+
+            if (clip.loadState == AudioDataLoadState.Unloaded)
+            {
+                clip.LoadAudioData();
+            }
+
+            if (clip.loadState == AudioDataLoadState.Loading)
+            {
+                var pendingOneShot = new PendingVoiceOneShot(clip, volume);
+                pendingVoiceOneShots.Add(pendingOneShot);
+                pendingOneShot.Playback = StartCoroutine(PlayVoiceOneShotWhenReady(pendingOneShot));
+                return;
+            }
+
+            if (clip.loadState == AudioDataLoadState.Loaded)
+            {
+                PlayLoadedVoiceOneShot(clip, volume);
+            }
+        }
+
+        private System.Collections.IEnumerator PlayVoiceOneShotWhenReady(PendingVoiceOneShot pendingOneShot)
+        {
+            while (pendingOneShot.Clip != null && pendingOneShot.Clip.loadState == AudioDataLoadState.Loading) yield return null;
+
+            pendingVoiceOneShots.Remove(pendingOneShot);
+            if (pendingOneShot.Clip != null && pendingOneShot.Clip.loadState == AudioDataLoadState.Loaded && !isPaused && !isApplicationPaused && hasApplicationFocus)
+            {
+                PlayLoadedVoiceOneShot(pendingOneShot.Clip, pendingOneShot.Volume);
+            }
+        }
+
+        private void PlayLoadedVoiceOneShot(AudioClip clip, float volume)
+        {
+            voiceSource.volume = config != null ? config.VoiceVolume : 1f;
+            voiceSource.PlayOneShot(clip, volume);
+            ApplyVoiceDuck(true);
         }
 
         private System.Collections.IEnumerator PlayVoiceWhenReady(AudioClip clip, float volume)
@@ -192,6 +237,7 @@ namespace Lbs.MiniGames.Shared.Audio
         public void StopVoice()
         {
             CancelPendingVoicePlayback();
+            CancelPendingVoiceOneShots();
             if (voiceSource == null) return;
             voiceSource.Stop();
             voiceSource.clip = null;
@@ -210,6 +256,16 @@ namespace Lbs.MiniGames.Shared.Audio
             if (voicePlayback != null) StopCoroutine(voicePlayback);
             voicePlayback = null;
             pendingVoiceClip = null;
+        }
+
+        private void CancelPendingVoiceOneShots()
+        {
+            foreach (PendingVoiceOneShot pendingOneShot in pendingVoiceOneShots)
+            {
+                if (pendingOneShot.Playback != null) StopCoroutine(pendingOneShot.Playback);
+            }
+
+            pendingVoiceOneShots.Clear();
         }
 
         public void PlaySfx(AudioClip clip, float volumeScale = 1f)
@@ -249,7 +305,7 @@ namespace Lbs.MiniGames.Shared.Audio
                 {
                     musicSource.UnPause();
                 }
-                if (voiceSource != null && voiceSource.clip != null && !voiceSource.isPlaying)
+                if (voiceSource != null)
                 {
                     voiceSource.UnPause();
                 }
@@ -272,6 +328,7 @@ namespace Lbs.MiniGames.Shared.Audio
             if (musicPlayback != null) StopCoroutine(musicPlayback);
             musicPlayback = null;
             CancelPendingVoicePlayback();
+            CancelPendingVoiceOneShots();
             isVoiceDucking = false;
             if (voiceSource != null)
             {
@@ -308,7 +365,7 @@ namespace Lbs.MiniGames.Shared.Audio
         private void Update()
         {
             // Detect voice completion to unduck music.
-            if (isVoiceDucking && voiceSource != null && !voiceSource.isPlaying)
+            if (isVoiceDucking && !isPaused && !isApplicationPaused && hasApplicationFocus && voiceSource != null && !voiceSource.isPlaying)
             {
                 ApplyVoiceDuck(false);
             }
@@ -327,7 +384,7 @@ namespace Lbs.MiniGames.Shared.Audio
             {
                 if (isPaused) return;
                 if (musicSource != null && currentMusicClip != null) musicSource.UnPause();
-                if (voiceSource != null && voiceSource.clip != null) voiceSource.UnPause();
+                if (voiceSource != null) voiceSource.UnPause();
                 // SFX is one-shot, not resumed.
             }
         }
@@ -335,6 +392,7 @@ namespace Lbs.MiniGames.Shared.Audio
         private void OnApplicationFocus(bool hasFocus)
         {
             // Mirror pause behavior: losing focus pauses, gaining focus resumes unless explicitly paused.
+            hasApplicationFocus = hasFocus;
             if (!hasFocus)
             {
                 if (musicSource != null && musicSource.isPlaying) musicSource.Pause();
@@ -350,12 +408,25 @@ namespace Lbs.MiniGames.Shared.Audio
 
         private void OnDisable()
         {
-            // MonoBehaviour OnDisable is not used for cleanup of persistent service; kept symmetric for testability.
+            StopAll();
         }
 
         private void OnDestroy()
         {
             StopAll();
+        }
+
+        private sealed class PendingVoiceOneShot
+        {
+            public PendingVoiceOneShot(AudioClip clip, float volume)
+            {
+                Clip = clip;
+                Volume = volume;
+            }
+
+            public AudioClip Clip { get; }
+            public float Volume { get; }
+            public Coroutine Playback { get; set; }
         }
     }
 }

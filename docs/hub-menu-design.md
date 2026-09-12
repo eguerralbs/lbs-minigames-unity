@@ -68,14 +68,18 @@ MainArea
 - **Non-interaction rule:** Wolfie is a decorative `Image` with raycasts disabled. The mascot and approved static welcome bubble have no Button, EventTrigger, collider, dialogue interaction, animation, effects, or mascot behavior.
 - **Future extensibility:** `MascotArea` is intentionally a sibling of `GamesArea`, so later approved speech, effects, or interaction can be added without restructuring the game gallery. Interactive dialogue, effects, and animation remain deferred.
 
-The `LobbyController` Inspector exposes the following approved layout fields: `mascotSprite`, `mascotAreaWidthFraction` (0.20–0.30), and `mascotBottomRightInset` (reference-pixel bottom-right inset). These fields tune only mascot presentation; they do not change the gallery, card activation, or navigation behavior.
+The current `LobbyController` Inspector serializes `mascotSprite`, `backgroundDecorations`, `backgroundDecorOpacity`, `backgroundDecorBaseSpeed`, and `cardTitleFont`. The design-target fields `mascotAreaWidthFraction` (0.20–0.30) and `mascotBottomRightInset` (reference-pixel bottom-right inset) are not currently serialized. Those target fields would tune only mascot presentation; they would not change gallery, card activation, or navigation behavior.
+
+### Runtime implementation note
+
+The current branch visibly implements a Wolfie avatar/profile-style capsule, a presentation-only difficulty selector, vertical category sections with horizontal card rows, rotating background decorations, and `Coming soon`/`Opening...` cues. These are implementation facts for review, not an automatic amendment of this approved design. The product/design decision remains whether to promote them into the approved direction or align the implementation in a follow-up.
 
 ## Game-card anatomy
 
 Each complete rounded card is one target; do not require a separate small “Play” button.
 
 1. **Art zone:** a rounded 16:9 (width / height) thumbnail frame with an edge-to-edge replaceable abstract illustration or simple line icon, intentionally cropped or fitted to identify the card at a glance.
-2. **Title zone:** one short game name. Any example such as `Game title` is a placeholder, not proposed game content or final naming.
+2. **Title zone:** in the `logica` section, show the explicit subject label assigned in the catalog instead of the game name; all other sections show the short game name. Any example such as `Game title` is a placeholder, not proposed game content or final naming.
 3. **Optional metadata:** one concise, non-essential label only when it genuinely helps recognition. Omit it rather than creating dense card copy.
 4. **State cue:** border, tonal surface change, or visible badge for availability and feedback—never text alone.
 

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: MatematicasCategory
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameCategory
   categoryId: matematicas
-  displayName: Juega y Aprende
+  displayName: Play and Learn
   description: "Refuerza operaciones y conceptos num\xE9ricos de primaria."

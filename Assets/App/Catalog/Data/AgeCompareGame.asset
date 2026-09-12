@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9fe78c23ed43495c98397b3c634c432, type: 3}
+  m_Name: AgeCompareGame
+  m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameDefinition
+  gameId: age.compare
+  visibleName: Math
+  hubSubjectLabel: Math
+  category: {fileID: 11400000, guid: 883620bcff84447a797cc002b7934e11, type: 2}
+  thumbnail: {fileID: 21300000, guid: 6856e7ef7bca4afb919f827fb67ab558, type: 3}
+  sceneName: AgeCompare
+  description: Listen and choose the asked age.
+  supportedDifficulties:
+  - {fileID: 11400000, guid: 938eec21ce2baa347b1ebf0eed1c274a, type: 2}
+  - {fileID: 11400000, guid: 8b48491698ff68849ac6ba3afc58b2e8, type: 2}
+  - {fileID: 11400000, guid: a2261b7d548af084bb9f537581337446, type: 2}
+  defaultDifficulty: {fileID: 11400000, guid: 8b48491698ff68849ac6ba3afc58b2e8, type: 2}
+  visibleInHub: 1

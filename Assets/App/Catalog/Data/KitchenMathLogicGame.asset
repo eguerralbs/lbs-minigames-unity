@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lbs.MiniGames.Catalog.GameDefinition
   gameId: kitchen.math.logic
   visibleName: Kitchen Math Logic
+  hubSubjectLabel: Math
   category: {fileID: 11400000, guid: 883620bcff84447a797cc002b7934e11, type: 2}
   thumbnail: {fileID: 21300000, guid: f139c7516d5146e6b9e6e543218ef96f, type: 3}
   sceneName: KitchenMathLogic
